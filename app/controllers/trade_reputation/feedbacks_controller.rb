@@ -3,7 +3,37 @@
 module TradeReputation
   class FeedbacksController < ::ApplicationController
     requires_plugin TradeReputation::PLUGIN_NAME
-    requires_login only: %i[eligibility]
+    requires_login only: %i[eligibility create]
+
+    def create
+      TradeReputation::Feedbacks::Create.call(
+        guardian: guardian,
+        params: params.permit(:marketplace_transaction_id, :rating, :comment),
+      ) do
+        on_success { render json: { success: true }, status: 201 }
+
+        on_failed_step(:verify_marketplace_contract_available) do
+          render_json_error(
+            I18n.t("trade_reputation.errors.temporarily_unavailable"),
+            status: 503,
+          )
+        end
+
+        on_failed_step(:save_feedback) do
+          render_json_error(
+            I18n.t("trade_reputation.errors.duplicate_feedback"),
+            status: 409,
+          )
+        end
+
+        on_failure do
+          render_json_error(
+            I18n.t("trade_reputation.errors.feedback_ineligible"),
+            status: 422,
+          )
+        end
+      end
+    end
 
     def eligibility
       unless marketplace_contract_available?
