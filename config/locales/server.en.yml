@@ -5,3 +5,5 @@ en:
   trade_reputation:
     errors:
       temporarily_unavailable: "Trade reputation is temporarily unavailable."
+      feedback_ineligible: "This feedback could not be submitted."
+      duplicate_feedback: "You have already submitted feedback for this transaction."

@@ -278,4 +278,162 @@ describe TradeReputation::FeedbacksController do
       expect(response.parsed_body.keys).to contain_exactly("eligible", "already_reviewed")
     end
   end
+
+  describe "#create" do
+    let(:create_path) { "/trade-reputation/feedbacks.json" }
+
+    def post_feedback(params)
+      post create_path, params: params
+    end
+
+    it "rejects an anonymous request" do
+      stub_transaction_info(transaction_id: 1)
+
+      post_feedback(marketplace_transaction_id: 1, rating: "positive")
+
+      expect(response.status).to eq(403)
+    end
+
+    it "allows the buyer to leave feedback for the seller" do
+      sign_in(buyer)
+      stub_transaction_info(transaction_id: 1)
+
+      post_feedback(marketplace_transaction_id: 1, rating: "positive", comment: "great trade")
+
+      expect(response.status).to eq(201)
+      expect(response.parsed_body).to eq({ "success" => true })
+
+      feedback = TradeReputation::Feedback.last
+      expect(feedback.reviewer_id).to eq(buyer.id)
+      expect(feedback.reviewee_id).to eq(seller.id)
+      expect(feedback.rating).to eq("positive")
+      expect(feedback.comment).to eq("great trade")
+    end
+
+    it "allows the seller to leave feedback for the buyer" do
+      sign_in(seller)
+      stub_transaction_info(transaction_id: 1)
+
+      post_feedback(marketplace_transaction_id: 1, rating: "negative")
+
+      expect(response.status).to eq(201)
+      expect(response.parsed_body).to eq({ "success" => true })
+
+      feedback = TradeReputation::Feedback.last
+      expect(feedback.reviewer_id).to eq(seller.id)
+      expect(feedback.reviewee_id).to eq(buyer.id)
+      expect(feedback.rating).to eq("negative")
+    end
+
+    it "derives the reviewee from the transaction and ignores client-supplied identities" do
+      sign_in(buyer)
+      stub_transaction_info(transaction_id: 1)
+
+      post_feedback(
+        marketplace_transaction_id: 1,
+        rating: "positive",
+        reviewer_id: other_user.id,
+        reviewee_id: other_user.id,
+        buyer_id: other_user.id,
+        seller_id: other_user.id,
+      )
+
+      expect(response.status).to eq(201)
+      feedback = TradeReputation::Feedback.last
+      expect(feedback.reviewer_id).to eq(buyer.id)
+      expect(feedback.reviewee_id).to eq(seller.id)
+    end
+
+    it "returns 422 for an invalid marketplace_transaction_id" do
+      sign_in(buyer)
+
+      post_feedback(marketplace_transaction_id: 0, rating: "positive")
+
+      expect(response.status).to eq(422)
+    end
+
+    it "returns 422 for an invalid rating" do
+      sign_in(buyer)
+      stub_transaction_info(transaction_id: 1)
+
+      post_feedback(marketplace_transaction_id: 1, rating: "amazing")
+
+      expect(response.status).to eq(422)
+    end
+
+    it "returns 422 for an unknown transaction" do
+      sign_in(buyer)
+      allow(Marketplace::TradeContract).to receive(:completed_transaction_info).with(1).and_return(nil)
+
+      post_feedback(marketplace_transaction_id: 1, rating: "positive")
+
+      expect(response.status).to eq(422)
+    end
+
+    it "returns 422 for an authenticated non-participant" do
+      sign_in(other_user)
+      stub_transaction_info(transaction_id: 1)
+
+      post_feedback(marketplace_transaction_id: 1, rating: "positive")
+
+      expect(response.status).to eq(422)
+    end
+
+    it "returns 409 for a duplicate submission" do
+      sign_in(buyer)
+      stub_transaction_info(transaction_id: 1)
+      TradeReputation::Feedback.create!(
+        marketplace_transaction_id: 1,
+        reviewer_id: buyer.id,
+        reviewee_id: seller.id,
+        rating: :positive,
+      )
+
+      post_feedback(marketplace_transaction_id: 1, rating: "negative")
+
+      expect(response.status).to eq(409)
+      expect(TradeReputation::Feedback.where(marketplace_transaction_id: 1).count).to eq(1)
+    end
+
+    it "returns 503 when Marketplace::TradeContract is undefined" do
+      sign_in(buyer)
+      hide_const("Marketplace::TradeContract")
+
+      post_feedback(marketplace_transaction_id: 1, rating: "positive")
+
+      expect(response.status).to eq(503)
+      expect(response.parsed_body["errors"]).to eq(
+        [I18n.t("trade_reputation.errors.temporarily_unavailable")],
+      )
+    end
+
+    it "returns 503 when Marketplace::TradeContract::VERSION is unsupported" do
+      sign_in(buyer)
+      stub_const("Marketplace::TradeContract::VERSION", 2)
+
+      post_feedback(marketplace_transaction_id: 1, rating: "positive")
+
+      expect(response.status).to eq(503)
+    end
+
+    it "returns only the success key on success" do
+      sign_in(buyer)
+      stub_transaction_info(transaction_id: 1)
+
+      post_feedback(marketplace_transaction_id: 1, rating: "positive")
+
+      expect(response.parsed_body.keys).to contain_exactly("success")
+    end
+
+    it "does not leak private/internal identifiers in error responses" do
+      sign_in(other_user)
+      stub_transaction_info(transaction_id: 1)
+
+      post_feedback(marketplace_transaction_id: 1, rating: "positive")
+
+      expect(response.body).not_to match(
+        /buyer_id|seller_id|reviewee_id|reviewer_id|completed_at|Marketplace|TradeContract|VERSION/,
+      )
+    end
+  end
 end
