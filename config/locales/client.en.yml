@@ -28,3 +28,18 @@ en:
       pagination:
         previous: "Previous"
         next: "Next"
+    feedback_new:
+      title: "Leave feedback"
+      rating_label: "Rating"
+      comment_label: "Comment (optional)"
+      submit: "Submit feedback"
+      ratings:
+        positive: "Positive"
+        neutral: "Neutral"
+        negative: "Negative"
+      invalid_transaction: "This feedback link is invalid."
+      already_submitted: "You've already submitted feedback for this transaction."
+      ineligible: "Feedback isn't available for this transaction."
+      unavailable: "Feedback submission is temporarily unavailable. Please try again later."
+      success: "Thanks! Your feedback has been submitted."
+      retryable_error: "Something went wrong submitting your feedback. Please try again."
