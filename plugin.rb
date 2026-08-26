@@ -12,3 +12,7 @@ module ::TradeReputation
 end
 
 require_relative "lib/trade_reputation/engine"
+
+after_initialize do
+  Discourse::Application.routes.append { mount ::TradeReputation::Engine, at: "/trade-reputation" }
+end

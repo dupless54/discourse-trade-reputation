@@ -1,3 +1,7 @@
 en:
   site_settings:
     trade_reputation_enabled: "Enable the trade reputation plugin"
+
+  trade_reputation:
+    errors:
+      temporarily_unavailable: "Trade reputation is temporarily unavailable."
