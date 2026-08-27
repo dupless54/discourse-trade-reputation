@@ -17,6 +17,10 @@ Always read this file, then only the nearest local rules for areas actually insp
 
 For multi-session work, read the active `docs/ai/work/<feature>/state.md` first and only the relevant implementation-plan section. Do not preload completed phases or unrelated docs.
 
+## Fast task path
+
+For non-trivial work, use `.agents/skills/task-packet/SKILL.md` before broad reads. Use `docs/ai/REPO_MAP.md` to locate code, `COMMANDS.md` only when validation is needed, and `DECISIONS.md` only when architecture/integration behavior is relevant. Skip the formal packet for trivial one-file edits.
+
 ## Marketplace boundary
 
 Marketplace owns listings, transactions, and transaction truth. Trade Reputation owns feedback, summaries, history, and moderation state.
@@ -53,4 +57,4 @@ Stop for unresolved architecture, schema/migration, authorization/security, Mark
 
 ## Token discipline and skills
 
-Minimum unnecessary tokens, not minimum reasoning. Prefer targeted symbols/ranges/diffs over broad scans or repeated summaries. Reusable procedures live under `.agents/skills/`; read only the matching `SKILL.md`: `project-plan`, `project-implement`, `project-review`, `project-final-verify`, `project-ci-repair`, `project-schema-review`, `project-security-review`, `project-update-state`.
+Minimum unnecessary tokens, not minimum reasoning. Prefer targeted symbols/ranges/diffs over broad scans or repeated summaries. Reusable procedures live under `.agents/skills/`; read only the matching `SKILL.md`: `task-packet`, `project-plan`, `project-implement`, `project-review`, `project-final-verify`, `project-ci-repair`, `project-schema-review`, `project-security-review`, `project-update-state`.
