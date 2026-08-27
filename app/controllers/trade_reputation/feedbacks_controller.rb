@@ -32,6 +32,10 @@ module TradeReputation
       info = ::Marketplace::TradeContract.completed_transaction_info(feedback.marketplace_transaction_id)
       raise Discourse::NotFound if info.blank? || info.transaction_id != feedback.marketplace_transaction_id
 
+      unless marketplace_detail_contract_available?(info)
+        return render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503)
+      end
+
       render json: {
         feedback: {
           public_id: feedback.public_id,
@@ -99,6 +103,10 @@ module TradeReputation
         ::Marketplace::TradeContract.respond_to?(:completed_transaction_info) &&
         ::Marketplace::TradeContract.const_defined?(:VERSION, false) &&
         ::Marketplace::TradeContract::VERSION == 1
+    end
+
+    def marketplace_detail_contract_available?(info)
+      info.respond_to?(:listing_id) && info.listing_id.present?
     end
   end
 end
