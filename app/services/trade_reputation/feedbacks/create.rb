@@ -5,15 +5,14 @@ module TradeReputation
     include Service::Base
 
     params do
-      attribute :marketplace_transaction_id, :integer
+      attribute :marketplace_transaction_id, :string
       attribute :rating, :string
       attribute :comment, :string
 
       validates :marketplace_transaction_id,
                 presence: true,
-                numericality: {
-                  only_integer: true,
-                  greater_than: 0,
+                format: {
+                  with: /\A[1-9]\d*\z/,
                 }
 
       validates :rating, presence: true, inclusion: { in: TradeReputation::Feedback.ratings.keys }
@@ -38,7 +37,8 @@ module TradeReputation
     end
 
     def fetch_transaction_info(params:)
-      info = ::Marketplace::TradeContract.completed_transaction_info(params.marketplace_transaction_id)
+      transaction_id = params.marketplace_transaction_id.to_i
+      info = ::Marketplace::TradeContract.completed_transaction_info(transaction_id)
       return fail_step!(feedback_ineligible: true) if info.blank?
 
       context[:transaction_info] = info

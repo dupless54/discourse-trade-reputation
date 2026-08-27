@@ -11,11 +11,7 @@ module TradeReputation
     end
 
     def results
-      {
-        summary: summary,
-        feedbacks: feedbacks,
-        meta: meta,
-      }
+      { summary: summary, feedbacks: feedbacks, meta: meta }
     end
 
     private
@@ -33,63 +29,44 @@ module TradeReputation
     end
 
     def window_summary(since)
-      scope = TradeReputation::Feedback.where(reviewee_id: user.id)
+      scope = received_scope
       scope = scope.where(created_at: since..) if since
       counts = scope.group(:rating).count
-
       positive = counts["positive"].to_i
       neutral = counts["neutral"].to_i
       negative = counts["negative"].to_i
       total = positive + neutral + negative
-
-      {
-        total: total,
-        positive: positive,
-        neutral: neutral,
-        negative: negative,
-        positive_percentage: percentage(positive, total),
-      }
+      { total: total, positive: positive, neutral: neutral, negative: negative,
+        positive_percentage: percentage(positive, total) }
     end
 
     def percentage(positive, total)
       return nil if total.zero?
-
       (positive.to_f / total * 100).round(2)
     end
 
     def given_total
-      TradeReputation::Feedback.where(reviewer_id: user.id).count
+      TradeReputation::Feedback.active.where(reviewer_id: user.id).count
     end
 
     def feedbacks
-      received_scope
-        .includes(:reviewer)
-        .order(created_at: :desc, id: :desc)
-        .limit(per_page)
-        .offset((page - 1) * per_page)
-        .map { |feedback| serialize_feedback(feedback) }
+      received_scope.includes(:reviewer).order(created_at: :desc, id: :desc)
+                    .limit(per_page).offset((page - 1) * per_page)
+                    .map { |feedback| serialize_feedback(feedback) }
     end
 
     def serialize_feedback(feedback)
-      {
-        rating: feedback.rating,
-        comment: feedback.comment,
-        created_at: feedback.created_at,
-        reviewer: serialize_reviewer(feedback.reviewer),
-      }
+      { rating: feedback.rating, comment: feedback.comment, created_at: feedback.created_at,
+        reviewer: serialize_reviewer(feedback.reviewer) }
     end
 
     def serialize_reviewer(reviewer)
       return nil if reviewer.blank?
-
-      {
-        username: reviewer.username,
-        avatar_template: reviewer.avatar_template,
-      }
+      { username: reviewer.username, avatar_template: reviewer.avatar_template }
     end
 
     def received_scope
-      TradeReputation::Feedback.where(reviewee_id: user.id)
+      TradeReputation::Feedback.active.where(reviewee_id: user.id)
     end
 
     def total
@@ -98,17 +75,11 @@ module TradeReputation
 
     def total_pages
       return 0 if total.zero?
-
       (total.to_f / per_page).ceil
     end
 
     def meta
-      {
-        page: page,
-        per_page: per_page,
-        total: total,
-        total_pages: total_pages,
-      }
+      { page: page, per_page: per_page, total: total, total_pages: total_pages }
     end
 
     def page
@@ -122,20 +93,17 @@ module TradeReputation
     def fetch_page
       raw = params[:page]
       return 1 if raw.blank?
-
       positive_integer(raw, :page)
     end
 
     def fetch_per_page
       raw = params[:per_page]
       return DEFAULT_PER_PAGE if raw.blank?
-
       [positive_integer(raw, :per_page), MAX_PER_PAGE].min
     end
 
     def positive_integer(raw, key)
       raise Discourse::InvalidParameters.new(key) unless raw.to_s.match?(/\A[1-9]\d*\z/)
-
       raw.to_s.to_i
     end
   end
