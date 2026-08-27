@@ -25,6 +25,8 @@ module TradeReputation
 
     def show
       feedback = TradeReputation::Feedback.active.includes(:reviewer, :reviewee).find_by!(public_id: params[:public_id])
+      raise Discourse::NotFound unless guardian.can_see_profile?(feedback.reviewee)
+
       return render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503) unless marketplace_contract_available?
 
       info = ::Marketplace::TradeContract.completed_transaction_info(feedback.marketplace_transaction_id)
