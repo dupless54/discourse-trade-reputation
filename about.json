@@ -1,10 +1,7 @@
 {
   "tests": {
     "requiredPlugins": [
-      {
-        "url": "https://github.com/dupless54/discourse-marketplace.git",
-        "branch": "feature/v1-trade-detail-contract"
-      }
+      "https://github.com/dupless54/discourse-marketplace.git"
     ]
   }
 }
