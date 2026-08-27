@@ -11,9 +11,11 @@ Always read this file, then only the nearest local rules for areas actually insp
 - feedback creation -> `app/services/trade_reputation/AGENTS.md`
 - HTTP endpoints -> `app/controllers/trade_reputation/AGENTS.md`
 - profile queries/integration helpers -> `lib/trade_reputation/AGENTS.md`
-- frontend -> `assets/javascripts/AGENTS.md`
+- frontend -> `assets/AGENTS.md`
 - schema/migrations -> `db/AGENTS.md`
 - specs/integration tests -> `spec/AGENTS.md`
+
+AI context files must stay out of runtime-compiled directories such as `assets/javascripts/`; keep frontend-scoped context at `assets/`.
 
 For multi-session work, read the active `docs/ai/work/<feature>/state.md` first and only the relevant implementation-plan section. Do not preload completed phases or unrelated docs.
 
