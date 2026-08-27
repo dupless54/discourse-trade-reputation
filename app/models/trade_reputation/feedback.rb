@@ -42,23 +42,23 @@ end
 #
 #  id                         :bigint           not null, primary key
 #  comment                    :text
+#  moderated_at               :datetime
 #  moderation_reason          :text
 #  moderation_status          :integer          default("active"), not null
-#  moderated_at               :datetime
-#  public_id                  :string(36)       not null
 #  rating                     :integer          not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  marketplace_transaction_id :bigint           not null
 #  moderated_by_id            :integer
+#  public_id                  :string(36)       not null
 #  reviewee_id                :integer          not null
 #  reviewer_id                :integer          not null
 #
 # Indexes
 #
-#  idx_trade_reputation_feedbacks_public_history    (reviewee_id,moderation_status,created_at)
-#  idx_trade_reputation_feedbacks_public_id         (public_id) UNIQUE
-#  idx_trade_reputation_feedbacks_reviewee_created  (reviewee_id,created_at)
+#  idx_trade_reputation_feedbacks_public_history     (reviewee_id,moderation_status,created_at)
+#  idx_trade_reputation_feedbacks_public_id          (public_id) UNIQUE
+#  idx_trade_reputation_feedbacks_reviewee_created   (reviewee_id,created_at)
 #  idx_trade_reputation_feedbacks_reviewer           (reviewer_id)
 #  idx_trade_reputation_feedbacks_txn_reviewer_uniq  (marketplace_transaction_id,reviewer_id) UNIQUE
 #
