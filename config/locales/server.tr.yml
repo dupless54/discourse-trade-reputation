@@ -1,0 +1,9 @@
+tr:
+  site_settings:
+    trade_reputation_enabled: "Ticaret itibarı eklentisini etkinleştir"
+
+  trade_reputation:
+    errors:
+      temporarily_unavailable: "Ticaret itibarı geçici olarak kullanılamıyor."
+      feedback_ineligible: "Bu değerlendirme gönderilemedi."
+      duplicate_feedback: "Bu işlem için zaten değerlendirme gönderdiniz."
