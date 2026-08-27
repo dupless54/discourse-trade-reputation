@@ -23,6 +23,30 @@ module TradeReputation
       end
     end
 
+    def show
+      feedback = TradeReputation::Feedback.active.includes(:reviewer, :reviewee).find_by!(public_id: params[:public_id])
+      return render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503) unless marketplace_contract_available?
+
+      info = ::Marketplace::TradeContract.completed_transaction_info(feedback.marketplace_transaction_id)
+      raise Discourse::NotFound if info.blank? || info.transaction_id != feedback.marketplace_transaction_id
+
+      render json: {
+        feedback: {
+          public_id: feedback.public_id,
+          transaction_reference: "TR-#{info.transaction_id}",
+          listing_reference: "LISTING-#{info.listing_id}",
+          rating: feedback.rating,
+          comment: feedback.comment,
+          created_at: feedback.created_at,
+          completed_at: info.completed_at,
+          reviewer: serialize_user(feedback.reviewer),
+          reviewee: serialize_user(feedback.reviewee),
+          buyer: serialize_user(User.find_by(id: info.buyer_id)),
+          seller: serialize_user(User.find_by(id: info.seller_id)),
+        },
+      }
+    end
+
     def eligibility
       unless marketplace_contract_available?
         return render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503)
@@ -62,6 +86,11 @@ module TradeReputation
     end
 
     private
+
+    def serialize_user(user)
+      return nil if user.blank?
+      { username: user.username, avatar_template: user.avatar_template }
+    end
 
     def marketplace_contract_available?
       defined?(::Marketplace::TradeContract) &&

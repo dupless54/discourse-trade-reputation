@@ -56,13 +56,19 @@ module TradeReputation
     end
 
     def serialize_feedback(feedback)
-      { rating: feedback.rating, comment: feedback.comment, created_at: feedback.created_at,
-        reviewer: serialize_reviewer(feedback.reviewer) }
+      {
+        public_id: feedback.public_id,
+        transaction_reference: "TR-#{feedback.marketplace_transaction_id}",
+        rating: feedback.rating,
+        comment: feedback.comment,
+        created_at: feedback.created_at,
+        reviewer: serialize_user(feedback.reviewer),
+      }
     end
 
-    def serialize_reviewer(reviewer)
-      return nil if reviewer.blank?
-      { username: reviewer.username, avatar_template: reviewer.avatar_template }
+    def serialize_user(target)
+      return nil if target.blank?
+      { username: target.username, avatar_template: target.avatar_template }
     end
 
     def received_scope
