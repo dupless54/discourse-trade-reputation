@@ -1,160 +1,56 @@
-# Discourse Trade Reputation — Project Instructions
+# Discourse Trade Reputation Agent Router
 
-This repository is a production Discourse plugin for trade feedback and reputation.
+Canonical instructions for ChatGPT/Codex, Claude, and Gemini.
 
-## Context discipline
+## Authority and context
 
-- Read only files required for the current task.
-- Search before opening many files.
-- Do not scan unrelated directories or sibling repositories.
-- Prefer targeted tests over the full suite.
-- Keep final summaries concise unless asked otherwise.
-- Load Marketplace integration details from `docs/MARKETPLACE_CONTRACT.md`.
-- Do not inspect the Marketplace repository unless the task explicitly requires integration verification.
-- Fresh-read relevant current Discourse source when framework behavior matters.
+When information conflicts: current source/tests > `docs/ai/CURRENT_STATE.md` or active work `state.md` > nearest local `AGENTS.md` > stable contract/architecture docs > plans/history.
 
-## Implementation
+Always read this file, then only the nearest local rules for areas actually inspected or changed:
+- feedback persistence -> `app/models/trade_reputation/AGENTS.md`
+- feedback creation -> `app/services/trade_reputation/AGENTS.md`
+- HTTP endpoints -> `app/controllers/trade_reputation/AGENTS.md`
+- profile queries/integration helpers -> `lib/trade_reputation/AGENTS.md`
+- frontend -> `assets/javascripts/discourse/AGENTS.md`
+- schema/migrations -> `db/AGENTS.md`
+- specs/integration tests -> `spec/AGENTS.md`
 
-- Follow current Discourse plugin APIs and this repository's existing conventions.
-- Prefer supported plugin APIs over monkey patches.
-- Make the smallest maintainable change.
-- Do not refactor unrelated working code.
-- Keep authorization and trust decisions server-side.
-- Avoid N+1 queries.
-- Add indexes for profile, history, and aggregate queries where justified.
-- Preserve backward compatibility unless explicitly changing an API.
+For multi-session work, read the active `docs/ai/work/<feature>/state.md` first and only the relevant implementation-plan section. Do not preload completed phases or unrelated docs.
 
 ## Marketplace boundary
 
-Marketplace owns:
-- Listings
-- Transactions
-- Transaction truth
+Marketplace owns listings, transactions, and transaction truth. Trade Reputation owns feedback, summaries, history, and moderation state.
 
-Trade Reputation owns:
-- Feedback
-- Reputation summaries
-- Reputation history
-
-Trade Reputation may consume Marketplace only through its stable documented public contract.
-
-Supported Marketplace boundary:
-
+Normally the only permitted Marketplace authorization surface is:
 - `Marketplace::TradeContract::VERSION == 1`
 - `Marketplace::TradeContract.completed_transaction_info(transaction_id)`
 
-Never reference or query:
-- `Marketplace::Transaction`
-- `Marketplace::Listing`
-- Marketplace database tables
-- private Marketplace services or context
-- cross-plugin ActiveRecord associations
+Do not query Marketplace tables or reference `Marketplace::Transaction`, `Marketplace::Listing`, private Marketplace services/context, or cross-plugin AR associations unless an explicitly approved contract change requires it. Marketplace completion events are notification-only; authorization always revalidates through the contract.
 
-Do not depend on Marketplace implementation details.
+## Feedback invariants
 
-Marketplace events, when consumed, are notifications only and must never replace authoritative contract validation.
+- Feedback requires a verified completed transaction.
+- Reviewer is the authenticated transaction participant.
+- Reviewee is derived server-side as the other participant.
+- Reviewer and reviewee differ.
+- At most one feedback per reviewer per transaction.
+- Ratings are positive, neutral, or negative.
+- Profile history is paginated and aggregates must not load full histories into memory.
+- Received history and given totals are separate concepts.
+- Respect current Discourse profile visibility.
+- Never expose internal transaction/listing/user/feedback database identifiers unless an approved public API explicitly requires it.
+- Moderation, when present, preserves auditability and must not silently bypass duplicate/eligibility rules.
 
-Marketplace must never depend on Trade Reputation.
+## Security, implementation, tests
 
-## Core feedback rules
+Protect against fake/non-completed transactions, IDOR, self-rating, replay/duplicates, races, client-controlled identity, mass assignment, and private-data leakage. Keep authorization server-side. Use current Discourse APIs verified from source when version-sensitive. Make the smallest maintainable change; no unrelated refactors.
 
-Feedback is allowed only when:
+Test the smallest relevant behavior. Never claim tests passed unless they actually ran; unavailable runtime checks are NOT RUN. Before finishing inspect the diff, run `git diff --check` when available, verify scope, and scan for forbidden Marketplace dependencies.
 
-- the referenced Marketplace transaction exists
-- the transaction is completed
-- reviewer is a transaction participant
-- reviewed user is the other participant
-- reviewer and reviewed user are different users
-- that reviewer has not already reviewed that transaction
+## Safety and delivery
 
-Supported ratings:
-- positive
-- neutral
-- negative
+Stop for unresolved architecture, schema/migration, authorization/security, Marketplace-contract, or product ambiguity. Preserve unrelated work. Never stage/commit `.claude/settings.local.json`. Never force-push, reset/clean, delete branches, deploy, or make destructive DB changes. Commit/push/PR/merge only when the current user task explicitly authorizes it.
 
-Enforce critical integrity rules at database level where appropriate.
+## Token discipline and skills
 
-## Reputation behavior
-
-- Buyer may review seller after completion.
-- Seller may review buyer after completion.
-- One feedback per reviewer per transaction.
-- Feedback includes an optional comment and creation timestamp.
-- Profile history is paginated.
-- Aggregate statistics must not load all feedback rows into memory.
-- Received feedback history and given-feedback totals must remain distinct concepts.
-- Do not invent reputation scores that are not part of the approved product contract.
-- Moderation behavior must preserve an audit trail when implemented.
-
-## Profile privacy
-
-- Respect current Discourse profile visibility rules.
-- Backend authorization remains authoritative.
-- Frontend visibility checks are UX only and must not replace server-side protection.
-- Do not expose transaction, listing, buyer, seller, reviewer, reviewee, feedback, or other private database identifiers unless explicitly part of an approved public API.
-
-## Security
-
-Protect against:
-- fake or nonexistent transactions
-- pre-completion feedback
-- IDOR
-- self-rating
-- duplicate/replayed feedback
-- race conditions
-- client-controlled reviewed user identity
-- mass assignment
-- private data leakage
-
-## Tests
-
-Test the smallest relevant scope:
-
-- valid buyer -> seller feedback
-- valid seller -> buyer feedback
-- unauthorized/nonparticipant
-- self-rating
-- incomplete/cancelled/disputed transaction
-- duplicate/replayed feedback
-- aggregation/profile history behavior
-- profile visibility when relevant
-
-Before finishing:
-- inspect the final diff
-- run `git diff --check`
-- verify task scope
-- scan for forbidden Marketplace dependencies
-- do not claim tests passed unless they actually ran
-
-If Ruby/Bundler is unavailable locally:
-- perform source/static verification
-- report runtime specs as NOT RUN
-
-## Git / deployment
-
-Never perform without explicit human approval:
-- commit
-- push
-- merge
-- rebase
-- reset
-- clean
-- force-push
-- deployment
-- production changes
-
-Never use:
-- `git add .`
-- `git add -A`
-
-Stage only explicitly approved files.
-
-Never overwrite unrelated uncommitted changes.
-
-Never stage or commit `.claude/settings.local.json`.
-
-## Documentation
-
-- `docs/PROJECT_BRIEF.md` contains V1 reputation requirements.
-- `docs/MARKETPLACE_CONTRACT.md` is the normal Marketplace integration boundary for this plugin.
-- `docs/TRADE_REPUTATION_ARCHITECTURE.md` contains or should contain the approved architecture.
+Minimum unnecessary tokens, not minimum reasoning. Prefer targeted symbols/ranges/diffs over broad scans or repeated summaries. Reusable procedures live under `.agents/skills/`; read only the matching `SKILL.md`: `project-plan`, `project-implement`, `project-review`, `project-final-verify`, `project-ci-repair`, `project-schema-review`, `project-security-review`, `project-update-state`.
