@@ -17,9 +17,21 @@ class TradeReputationFeedbackShow extends Component {
         <dt>{{i18n "trade_reputation.feedback_detail.listing"}}</dt>
         <dd>{{this.feedback.listing_reference}}</dd>
         <dt>{{i18n "trade_reputation.feedback_detail.buyer"}}</dt>
-        <dd>{{this.feedback.buyer.username}}</dd>
+        <dd>
+          {{#if this.feedback.buyer}}
+            {{this.feedback.buyer.username}}
+          {{else}}
+            {{i18n "trade_reputation.feedback_detail.deleted_user"}}
+          {{/if}}
+        </dd>
         <dt>{{i18n "trade_reputation.feedback_detail.seller"}}</dt>
-        <dd>{{this.feedback.seller.username}}</dd>
+        <dd>
+          {{#if this.feedback.seller}}
+            {{this.feedback.seller.username}}
+          {{else}}
+            {{i18n "trade_reputation.feedback_detail.deleted_user"}}
+          {{/if}}
+        </dd>
         <dt>{{i18n "trade_reputation.feedback_detail.rating"}}</dt>
         <dd>{{this.feedback.rating}}</dd>
         <dt>{{i18n "trade_reputation.feedback_detail.completed_at"}}</dt>
