@@ -5,6 +5,7 @@ TradeReputation::Engine.routes.draw do
       constraints: { marketplace_transaction_id: /[1-9]\d*/ }
   get "feedbacks/public/:public_id" => "feedbacks#show"
   post "feedbacks" => "feedbacks#create"
+  put "feedbacks/public/:public_id/invalidate" => "feedbacks#invalidate"
   put "feedbacks/:id/invalidate" => "feedbacks#invalidate", constraints: { id: /[1-9]\d*/ }
   get "users/:username/trade" => "users#trade"
 end

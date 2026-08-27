@@ -41,6 +41,14 @@ en:
         completed_at: "Transaction completed"
         feedback_at: "Feedback submitted"
         deleted_user: "Deleted user"
+        moderation:
+          heading: "Staff moderation"
+          description: "Invalidate abusive feedback without deleting its audit record."
+          reason_label: "Reason"
+          invalidate: "Invalidate feedback"
+          invalidating: "Invalidating…"
+          success: "Feedback invalidated. It is no longer included in public reputation."
+          error: "The feedback could not be invalidated. Please try again."
       feedback_new:
         title: "Leave feedback"
         rating_label: "Rating"
