@@ -6,8 +6,6 @@ describe TradeReputation::UsersController do
 
   before do
     SiteSetting.trade_reputation_enabled = true
-    # Fresh fabricated users have 0 posts and TL1, which hide_new_user_profiles
-    # (default true) would otherwise hide from anonymous visitors.
     SiteSetting.hide_new_user_profiles = false
   end
 
@@ -35,7 +33,6 @@ describe TradeReputation::UsersController do
 
     it "allows an anonymous visitor to view an ordinary public profile" do
       get trade_path(target_user.username)
-
       expect(response.status).to eq(200)
     end
   end
@@ -43,7 +40,6 @@ describe TradeReputation::UsersController do
   describe "unknown username" do
     it "returns 404 for a nonexistent username" do
       get trade_path("does-not-exist-#{SecureRandom.hex(4)}")
-
       expect(response.status).to eq(404)
     end
   end
@@ -51,9 +47,7 @@ describe TradeReputation::UsersController do
   describe "hidden profile" do
     it "returns 404 when the target user has hidden their profile" do
       target_user.user_option.update!(hide_profile: true)
-
       get trade_path(target_user.username)
-
       expect(response.status).to eq(404)
     end
   end
@@ -61,7 +55,6 @@ describe TradeReputation::UsersController do
   describe "response shape" do
     it "exposes exactly summary, feedbacks, meta at the top level" do
       get trade_path(target_user.username)
-
       expect(response.parsed_body.keys).to contain_exactly("summary", "feedbacks", "meta")
     end
 
@@ -75,10 +68,16 @@ describe TradeReputation::UsersController do
       )
 
       get trade_path(target_user.username)
-
       entry = response.parsed_body["feedbacks"].first
 
-      expect(entry.keys).to contain_exactly("rating", "comment", "created_at", "reviewer")
+      expect(entry.keys).to contain_exactly(
+        "public_id",
+        "transaction_reference",
+        "rating",
+        "comment",
+        "created_at",
+        "reviewer",
+      )
       expect(entry["reviewer"].keys).to contain_exactly("username", "avatar_template")
     end
   end
@@ -101,6 +100,8 @@ describe TradeReputation::UsersController do
 
       entry = response.parsed_body["feedbacks"].first
       expect(entry).not_to have_key("id")
+      expect(entry["public_id"]).to match(/\A[0-9a-f-]{36}\z/)
+      expect(entry["transaction_reference"]).to eq("TR-3")
       expect(entry["reviewer"]).not_to have_key("id")
     end
   end
@@ -117,7 +118,6 @@ describe TradeReputation::UsersController do
       end
 
       get "#{trade_path(target_user.username)}?per_page=1&page=2"
-
       body = response.parsed_body
       expect(body["meta"]["page"]).to eq(2)
       expect(body["meta"]["per_page"]).to eq(1)
@@ -126,7 +126,6 @@ describe TradeReputation::UsersController do
 
     it "returns 400 for an invalid pagination param" do
       get "#{trade_path(target_user.username)}?page=abc"
-
       expect(response.status).to eq(400)
     end
   end
@@ -134,9 +133,7 @@ describe TradeReputation::UsersController do
   describe "plugin disabled" do
     it "returns 404 when the plugin is disabled" do
       SiteSetting.trade_reputation_enabled = false
-
       get trade_path(target_user.username)
-
       expect(response.status).to eq(404)
     end
   end

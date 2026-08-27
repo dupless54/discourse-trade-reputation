@@ -135,6 +135,11 @@ class UserTrade extends Component {
                   {{i18n feedback.ratingLabelKey}}
                 </div>
 
+                <div class="trade-reputation-history__transaction">
+                  {{i18n "trade_reputation.trade.history.transaction"}}:
+                  {{feedback.transaction_reference}}
+                </div>
+
                 {{#if feedback.comment}}
                   <p class="trade-reputation-history__comment">
                     {{feedback.comment}}
@@ -144,6 +149,14 @@ class UserTrade extends Component {
                 <div class="trade-reputation-history__date">
                   {{dFormatDate feedback.created_at format="medium"}}
                 </div>
+
+                <LinkTo
+                  @route="tradeReputationFeedbackShow"
+                  @model={{feedback.public_id}}
+                  class="trade-reputation-history__details"
+                >
+                  {{i18n "trade_reputation.trade.history.details"}}
+                </LinkTo>
               </li>
             {{/each}}
           </ul>

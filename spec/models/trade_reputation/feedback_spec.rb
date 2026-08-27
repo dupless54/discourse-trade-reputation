@@ -78,6 +78,8 @@ describe TradeReputation::Feedback do
 
     it "rejects reviewer == reviewee at the database level even if model validation is bypassed" do
       feedback = build_feedback(reviewee: reviewer)
+      feedback.public_id = SecureRandom.uuid
+
       expect { feedback.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid)
     end
   end
@@ -94,6 +96,7 @@ describe TradeReputation::Feedback do
     it "rejects a duplicate reviewer/transaction pair at the database level even if model validation is bypassed" do
       build_feedback.save!
       duplicate = build_feedback
+      duplicate.public_id = SecureRandom.uuid
 
       expect { duplicate.save(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
     end
