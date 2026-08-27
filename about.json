@@ -1,0 +1,7 @@
+{
+  "tests": {
+    "requiredPlugins": [
+      "https://github.com/dupless54/discourse-marketplace.git"
+    ]
+  }
+}
