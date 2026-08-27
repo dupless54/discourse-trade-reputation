@@ -1,20 +1,33 @@
 # frozen_string_literal: true
 
 # Cross-plugin integration coverage: exercises Trade Reputation against the
-# real Marketplace::TradeContract and real Marketplace::Transaction records,
-# with both plugins loaded together (see about.json requiredPlugins). This
-# spec must never stub/mock Marketplace::TradeContract — see
-# docs/INTEGRATION_BOUNDARY.md for the boundary this guards against drifting.
+# real Marketplace::TradeContract and real Marketplace records, with both
+# plugins loaded together (see about.json requiredPlugins). This spec must
+# never stub/mock Marketplace::TradeContract — see docs/MARKETPLACE_CONTRACT.md
+# for the boundary this guards against drifting.
 describe "Marketplace <-> Trade Reputation integration", type: :request do
   fab!(:buyer) { Fabricate(:user) }
   fab!(:seller) { Fabricate(:user) }
   fab!(:other_user) { Fabricate(:user) }
-  fab!(:category) { Fabricate(:marketplace_category) }
+
+  fab!(:category) do
+    Marketplace::Category.create!(
+      name: "Integration Category",
+      slug: "integration-category",
+      position: 0,
+      enabled: true,
+    )
+  end
+
   fab!(:listing) do
-    Fabricate(
-      :marketplace_listing,
+    Marketplace::Listing.create!(
       seller: seller,
       category: category,
+      title: "Integration Listing",
+      raw: "Integration listing description.",
+      cooked: "<p>Integration listing description.</p>",
+      price_cents: 1000,
+      currency: "USD",
       status: Marketplace::Listing.statuses[:active],
     )
   end
@@ -22,7 +35,12 @@ describe "Marketplace <-> Trade Reputation integration", type: :request do
   before { SiteSetting.trade_reputation_enabled = true }
 
   def build_pending
-    Fabricate(:marketplace_transaction, listing: listing, buyer: buyer, seller: seller)
+    Marketplace::Transaction.create!(
+      listing: listing,
+      buyer: buyer,
+      seller: seller,
+      status: Marketplace::Transaction.statuses[:pending],
+    )
   end
 
   def build_completed
