@@ -25,3 +25,22 @@ module TradeReputation
     end
   end
 end
+
+# == Schema Information
+#
+# Table name: trade_reputation_feedbacks
+#
+#  id                         :bigint           not null, primary key
+#  comment                    :text
+#  rating                     :integer          not null
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  marketplace_transaction_id :bigint           not null
+#  reviewee_id                :integer          not null
+#  reviewer_id                :integer          not null
+#
+# Indexes
+#
+#  idx_trade_reputation_feedbacks_reviewee_created   (reviewee_id,created_at)
+#  idx_trade_reputation_feedbacks_txn_reviewer_uniq  (marketplace_transaction_id,reviewer_id) UNIQUE
+#

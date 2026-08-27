@@ -217,11 +217,12 @@ describe TradeReputation::FeedbacksController do
 
     it "returns 503 when VERSION is unsupported" do
       sign_in(buyer)
-      stub_const("Marketplace::TradeContract::VERSION", 2)
 
-      get eligibility_path(1)
+      stub_const(Marketplace::TradeContract, :VERSION, 2) do
+        get eligibility_path(1)
 
-      expect(response.status).to eq(503)
+        expect(response.status).to eq(503)
+      end
     end
 
     it "proceeds normally when VERSION == 1" do
@@ -409,11 +410,12 @@ describe TradeReputation::FeedbacksController do
 
     it "returns 503 when Marketplace::TradeContract::VERSION is unsupported" do
       sign_in(buyer)
-      stub_const("Marketplace::TradeContract::VERSION", 2)
 
-      post_feedback(marketplace_transaction_id: 1, rating: "positive")
+      stub_const(Marketplace::TradeContract, :VERSION, 2) do
+        post_feedback(marketplace_transaction_id: 1, rating: "positive")
 
-      expect(response.status).to eq(503)
+        expect(response.status).to eq(503)
+      end
     end
 
     it "returns only the success key on success" do
