@@ -3,7 +3,7 @@
 module TradeReputation
   class FeedbacksController < ::ApplicationController
     requires_plugin TradeReputation::PLUGIN_NAME
-    requires_login only: %i[eligibility create]
+    requires_login only: %i[eligibility create invalidate]
 
     def create
       TradeReputation::Feedbacks::Create.call(
@@ -11,38 +11,21 @@ module TradeReputation
         params: params.permit(:marketplace_transaction_id, :rating, :comment),
       ) do
         on_success { render json: { success: true }, status: 201 }
-
         on_failed_step(:verify_marketplace_contract_available) do
-          render_json_error(
-            I18n.t("trade_reputation.errors.temporarily_unavailable"),
-            status: 503,
-          )
+          render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503)
         end
-
         on_failed_step(:save_feedback) do
-          render_json_error(
-            I18n.t("trade_reputation.errors.duplicate_feedback"),
-            status: 409,
-          )
+          render_json_error(I18n.t("trade_reputation.errors.duplicate_feedback"), status: 409)
         end
-
         on_failure do
-          render_json_error(
-            I18n.t("trade_reputation.errors.feedback_ineligible"),
-            status: 422,
-          )
+          render_json_error(I18n.t("trade_reputation.errors.feedback_ineligible"), status: 422)
         end
       end
     end
 
     def eligibility
       unless marketplace_contract_available?
-        return(
-          render_json_error(
-            I18n.t("trade_reputation.errors.temporarily_unavailable"),
-            status: 503,
-          )
-        )
+        return render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503)
       end
 
       transaction_id = params[:marketplace_transaction_id].to_i
@@ -50,18 +33,32 @@ module TradeReputation
       return render json: { eligible: false } if info.blank?
 
       user_id = current_user.id
-      unless user_id == info.buyer_id || user_id == info.seller_id
-        return render json: { eligible: false }
-      end
+      return render json: { eligible: false } unless user_id == info.buyer_id || user_id == info.seller_id
 
-      already_reviewed =
-        TradeReputation::Feedback.exists?(
-          marketplace_transaction_id: info.transaction_id,
-          reviewer_id: user_id,
-        )
+      already_reviewed = TradeReputation::Feedback.exists?(
+        marketplace_transaction_id: info.transaction_id,
+        reviewer_id: user_id,
+      )
       return render json: { eligible: false, already_reviewed: true } if already_reviewed
 
       render json: { eligible: true }
+    end
+
+    def invalidate
+      raise Discourse::InvalidAccess unless current_user.staff?
+
+      reason = params[:reason].to_s.strip
+      raise Discourse::InvalidParameters.new(:reason) if reason.blank? || reason.length > 1000
+
+      feedback = TradeReputation::Feedback.find(params[:id])
+      feedback.update!(
+        moderation_status: :invalidated,
+        moderated_at: Time.zone.now,
+        moderated_by: current_user,
+        moderation_reason: reason,
+      )
+
+      render json: { success: true }
     end
 
     private
