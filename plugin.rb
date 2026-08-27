@@ -9,6 +9,10 @@ enabled_site_setting :trade_reputation_enabled
 
 register_asset "stylesheets/common/trade-reputation.scss"
 
+Discourse::Application.routes.append do
+  get "u/:username/trade" => "users#show", constraints: { username: RouteFormat.username }
+end
+
 module ::TradeReputation
   PLUGIN_NAME = "discourse-trade-reputation"
 end
