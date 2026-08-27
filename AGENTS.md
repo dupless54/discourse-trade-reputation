@@ -11,7 +11,7 @@ Always read this file, then only the nearest local rules for areas actually insp
 - feedback creation -> `app/services/trade_reputation/AGENTS.md`
 - HTTP endpoints -> `app/controllers/trade_reputation/AGENTS.md`
 - profile queries/integration helpers -> `lib/trade_reputation/AGENTS.md`
-- frontend -> `assets/javascripts/AGENTS.md`
+- frontend -> `docs/ai/scopes/frontend/AGENTS.md`
 - schema/migrations -> `db/AGENTS.md`
 - specs/integration tests -> `spec/AGENTS.md`
 
