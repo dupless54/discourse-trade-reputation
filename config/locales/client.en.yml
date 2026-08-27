@@ -51,6 +51,7 @@ en:
           error: "The feedback could not be invalidated. Please try again."
       feedback_new:
         title: "Leave feedback"
+        cta: "Leave feedback"
         rating_label: "Rating"
         comment_label: "Comment (optional)"
         submit: "Submit feedback"
