@@ -4,7 +4,10 @@ describe "Trade Reputation feedback detail", type: :request do
   fab!(:buyer) { Fabricate(:user) }
   fab!(:seller) { Fabricate(:user) }
 
-  before { SiteSetting.trade_reputation_enabled = true }
+  before do
+    SiteSetting.trade_reputation_enabled = true
+    SiteSetting.hide_new_user_profiles = false
+  end
 
   def feedback
     @feedback ||=
@@ -60,6 +63,16 @@ describe "Trade Reputation feedback detail", type: :request do
       expect(response.body).not_to include(field)
     end
     expect(response.parsed_body.fetch("feedback")).not_to have_key("id")
+  end
+
+  it "returns 404 when the reviewed user's profile is hidden" do
+    seller.user_option.update!(hide_profile: true)
+    allow(Marketplace::TradeContract).to receive(:completed_transaction_info)
+      .and_return(transaction_info)
+
+    get detail_path
+
+    expect(response.status).to eq(404)
   end
 
   it "returns 404 when the feedback has been invalidated" do
