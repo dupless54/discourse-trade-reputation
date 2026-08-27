@@ -21,7 +21,7 @@ describe "Trade Reputation feedback detail", type: :request do
   end
 
   def transaction_info
-    Marketplace::TradeContract::TransactionInfo.new(
+    Data.define(:transaction_id, :listing_id, :buyer_id, :seller_id, :completed_at).new(
       transaction_id: feedback.marketplace_transaction_id,
       listing_id: 1234,
       buyer_id: buyer.id,
@@ -101,6 +101,24 @@ describe "Trade Reputation feedback detail", type: :request do
 
   it "returns 503 when the Marketplace public contract is unavailable" do
     hide_const("Marketplace::TradeContract")
+
+    get detail_path
+
+    expect(response.status).to eq(503)
+  end
+
+  it "returns 503 when the Marketplace contract does not expose a listing reference" do
+    legacy_info =
+      Marketplace::TradeContract::TransactionInfo.new(
+        transaction_id: feedback.marketplace_transaction_id,
+        buyer_id: buyer.id,
+        seller_id: seller.id,
+        completed_at: Time.zone.local(2026, 8, 27, 12, 0, 0),
+      )
+
+    allow(Marketplace::TradeContract).to receive(:completed_transaction_info)
+      .with(feedback.marketplace_transaction_id)
+      .and_return(legacy_info)
 
     get detail_path
 
