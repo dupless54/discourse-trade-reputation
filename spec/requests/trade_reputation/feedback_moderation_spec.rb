@@ -38,10 +38,42 @@ describe "Trade Reputation feedback moderation", type: :request do
     expect(feedback.comment).to eq("original feedback")
   end
 
+  it "allows staff moderation through the opaque public feedback id" do
+    sign_in(admin)
+
+    put "/trade-reputation/feedbacks/public/#{feedback.public_id}/invalidate.json",
+        params: { reason: "personal attack" }
+
+    expect(response.status).to eq(200)
+    expect(response.parsed_body).to eq({ "success" => true })
+    expect(feedback.reload).to be_invalidated
+    expect(feedback.moderation_reason).to eq("personal attack")
+  end
+
+  it "does not overwrite the original moderation audit on repeated invalidation" do
+    sign_in(admin)
+
+    put "/trade-reputation/feedbacks/public/#{feedback.public_id}/invalidate.json",
+        params: { reason: "first reason" }
+
+    feedback.reload
+    original_moderated_at = feedback.moderated_at
+    original_moderated_by_id = feedback.moderated_by_id
+
+    put "/trade-reputation/feedbacks/public/#{feedback.public_id}/invalidate.json",
+        params: { reason: "replacement reason" }
+
+    expect(response.status).to eq(200)
+    feedback.reload
+    expect(feedback.moderation_reason).to eq("first reason")
+    expect(feedback.moderated_at).to eq(original_moderated_at)
+    expect(feedback.moderated_by_id).to eq(original_moderated_by_id)
+  end
+
   it "does not allow a regular user to invalidate feedback" do
     sign_in(buyer)
 
-    put "/trade-reputation/feedbacks/#{feedback.id}/invalidate.json",
+    put "/trade-reputation/feedbacks/public/#{feedback.public_id}/invalidate.json",
         params: { reason: "hide this" }
 
     expect(response.status).to eq(403)

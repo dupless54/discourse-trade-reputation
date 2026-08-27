@@ -25,7 +25,7 @@ module TradeReputation
 
     def show
       feedback = TradeReputation::Feedback.active.includes(:reviewer, :reviewee).find_by!(public_id: params[:public_id])
-      raise Discourse::NotFound unless guardian.can_see_profile?(feedback.reviewee)
+      raise Discourse::NotFound if feedback.reviewee.blank? || !guardian.can_see_profile?(feedback.reviewee)
 
       return render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503) unless marketplace_contract_available?
 
@@ -80,18 +80,28 @@ module TradeReputation
       reason = params[:reason].to_s.strip
       raise Discourse::InvalidParameters.new(:reason) if reason.blank? || reason.length > 1000
 
-      feedback = TradeReputation::Feedback.find(params[:id])
-      feedback.update!(
-        moderation_status: :invalidated,
-        moderated_at: Time.zone.now,
-        moderated_by: current_user,
-        moderation_reason: reason,
-      )
+      feedback = feedback_for_moderation
+      unless feedback.invalidated?
+        feedback.update!(
+          moderation_status: :invalidated,
+          moderated_at: Time.zone.now,
+          moderated_by: current_user,
+          moderation_reason: reason,
+        )
+      end
 
       render json: { success: true }
     end
 
     private
+
+    def feedback_for_moderation
+      if params[:public_id].present?
+        TradeReputation::Feedback.find_by!(public_id: params[:public_id])
+      else
+        TradeReputation::Feedback.find(params[:id])
+      end
+    end
 
     def serialize_user(user)
       return nil if user.blank?

@@ -7,6 +7,8 @@
 
 enabled_site_setting :trade_reputation_enabled
 
+register_asset "stylesheets/common/trade-reputation.scss"
+
 module ::TradeReputation
   PLUGIN_NAME = "discourse-trade-reputation"
 end
