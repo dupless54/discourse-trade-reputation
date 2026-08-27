@@ -4,14 +4,14 @@ Canonical instructions for ChatGPT/Codex, Claude, and Gemini.
 
 ## Authority and context
 
-When information conflicts: current source/tests > `docs/ai/CURRENT_STATE.md` or active work `state.md` > nearest local `AGENTS.md` > stable contract/architecture docs > plans/history.
+When information conflicts: current source/tests > `docs/ai/CURRENT_STATE.md` or active work `state.md` > nearest scoped `AGENTS.md` > stable docs > history.
 
 Always read this file, then only the nearest local rules for areas actually inspected or changed:
 - feedback persistence -> `app/models/trade_reputation/AGENTS.md`
 - feedback creation -> `app/services/trade_reputation/AGENTS.md`
 - HTTP endpoints -> `app/controllers/trade_reputation/AGENTS.md`
 - profile queries/integration helpers -> `lib/trade_reputation/AGENTS.md`
-- frontend -> `assets/javascripts/discourse/AGENTS.md`
+- frontend -> `assets/javascripts/AGENTS.md`
 - schema/migrations -> `db/AGENTS.md`
 - specs/integration tests -> `spec/AGENTS.md`
 
@@ -23,7 +23,7 @@ For non-trivial work, use `.agents/skills/task-packet/SKILL.md` before broad rea
 
 ## Marketplace boundary
 
-Marketplace owns listings, transactions, and transaction truth. Trade Reputation owns feedback, summaries, history, and moderation state.
+Marketplace owns listings/transactions/authoritative transaction state. Trade Reputation owns feedback/summary/history/moderation.
 
 Normally the only permitted Marketplace authorization surface is:
 - `Marketplace::TradeContract::VERSION == 1`
