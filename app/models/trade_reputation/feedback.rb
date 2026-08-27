@@ -11,6 +11,9 @@ module TradeReputation
     enum :rating, { negative: 0, neutral: 1, positive: 2 }, validate: true
     enum :moderation_status, { active: 0, invalidated: 10 }, validate: true
 
+    before_validation :ensure_public_id, on: :create
+
+    validates :public_id, presence: true, uniqueness: true
     validates :marketplace_transaction_id, presence: true
     validates :reviewer, presence: true
     validates :reviewee, presence: true
@@ -20,6 +23,10 @@ module TradeReputation
     validate :reviewer_differs_from_reviewee
 
     private
+
+    def ensure_public_id
+      self.public_id ||= SecureRandom.uuid
+    end
 
     def reviewer_differs_from_reviewee
       return if reviewer_id.blank? || reviewee_id.blank? || reviewer_id != reviewee_id
@@ -43,12 +50,14 @@ end
 #  updated_at                 :datetime         not null
 #  marketplace_transaction_id :bigint           not null
 #  moderated_by_id            :integer
+#  public_id                  :string(36)       not null
 #  reviewee_id                :integer          not null
 #  reviewer_id                :integer          not null
 #
 # Indexes
 #
 #  idx_trade_reputation_feedbacks_public_history     (reviewee_id,moderation_status,created_at)
+#  idx_trade_reputation_feedbacks_public_id          (public_id) UNIQUE
 #  idx_trade_reputation_feedbacks_reviewee_created   (reviewee_id,created_at)
 #  idx_trade_reputation_feedbacks_reviewer           (reviewer_id)
 #  idx_trade_reputation_feedbacks_txn_reviewer_uniq  (marketplace_transaction_id,reviewer_id) UNIQUE
