@@ -51,6 +51,7 @@ tr_TR:
           error: "Değerlendirme geçersiz kılınamadı. Lütfen tekrar deneyin."
       feedback_new:
         title: "Değerlendirme yap"
+        cta: "Değerlendir"
         rating_label: "Değerlendirme"
         comment_label: "Yorum (isteğe bağlı)"
         submit: "Değerlendirmeyi gönder"
