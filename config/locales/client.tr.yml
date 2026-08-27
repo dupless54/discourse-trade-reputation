@@ -1,0 +1,66 @@
+tr:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          trade_reputation: "Ticaret İtibarı"
+  js:
+    trade_reputation:
+      trade:
+        nav_label: "Ticaret"
+        title: "Ticaret"
+        summary:
+          windows:
+            all_time: "Tüm zamanlar"
+            last_30_days: "Son 30 gün"
+            last_6_months: "Son 6 ay"
+            last_1_year: "Son 1 yıl"
+          total: "Toplam"
+          positive: "Olumlu"
+          neutral: "Nötr"
+          negative: "Olumsuz"
+          positive_percentage: "Olumlu %"
+          no_data: "Henüz değerlendirme yok"
+          given_total: "Verilen değerlendirmeler"
+        history:
+          heading: "Alınan değerlendirmeler"
+          empty: "Henüz değerlendirme alınmadı."
+          reviewer_fallback: "Silinmiş kullanıcı"
+          transaction: "İşlem"
+          details: "Ayrıntıları görüntüle"
+        pagination:
+          previous: "Önceki"
+          next: "Sonraki"
+      feedback_detail:
+        title: "Ticaret değerlendirmesi"
+        transaction: "İşlem"
+        listing: "İlan"
+        buyer: "Alıcı"
+        seller: "Satıcı"
+        rating: "Değerlendirme"
+        completed_at: "İşlem tamamlandı"
+        feedback_at: "Değerlendirme gönderildi"
+        deleted_user: "Silinmiş kullanıcı"
+        moderation:
+          heading: "Yetkili moderasyonu"
+          description: "Kötüye kullanım içeren değerlendirmeyi denetim kaydını silmeden geçersiz kılın."
+          reason_label: "Gerekçe"
+          invalidate: "Değerlendirmeyi geçersiz kıl"
+          invalidating: "Geçersiz kılınıyor…"
+          success: "Değerlendirme geçersiz kılındı. Artık herkese açık itibar puanına dahil edilmiyor."
+          error: "Değerlendirme geçersiz kılınamadı. Lütfen tekrar deneyin."
+      feedback_new:
+        title: "Değerlendirme yap"
+        rating_label: "Değerlendirme"
+        comment_label: "Yorum (isteğe bağlı)"
+        submit: "Değerlendirmeyi gönder"
+        ratings:
+          positive: "Olumlu"
+          neutral: "Nötr"
+          negative: "Olumsuz"
+        invalid_transaction: "Bu değerlendirme bağlantısı geçersiz."
+        already_submitted: "Bu işlem için zaten değerlendirme gönderdiniz."
+        ineligible: "Bu işlem için değerlendirme yapılamıyor."
+        unavailable: "Değerlendirme gönderimi geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin."
+        success: "Teşekkürler! Değerlendirmeniz gönderildi."
+        retryable_error: "Değerlendirmeniz gönderilirken bir sorun oluştu. Lütfen tekrar deneyin."
