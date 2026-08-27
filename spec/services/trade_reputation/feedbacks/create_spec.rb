@@ -137,11 +137,12 @@ describe TradeReputation::Feedbacks::Create do
     end
 
     it "fails with marketplace_contract_unavailable when VERSION is unsupported" do
-      stub_const("Marketplace::TradeContract::VERSION", 2)
-      result = call_service(guardian: buyer.guardian)
+      stub_const(Marketplace::TradeContract, :VERSION, 2) do
+        result = call_service(guardian: buyer.guardian)
 
-      expect(result).to be_failure
-      expect(result.marketplace_contract_unavailable).to eq(true)
+        expect(result).to be_failure
+        expect(result.marketplace_contract_unavailable).to eq(true)
+      end
     end
 
     it "proceeds past the guard when VERSION == 1" do

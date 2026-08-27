@@ -4,42 +4,43 @@ en:
       site_settings:
         categories:
           trade_reputation: "Trade Reputation"
-  trade_reputation:
-    trade:
-      nav_label: "Trade"
-      title: "Trade"
-      summary:
-        windows:
-          all_time: "All time"
-          last_30_days: "Last 30 days"
-          last_6_months: "Last 6 months"
-          last_1_year: "Last year"
-        total: "Total"
-        positive: "Positive"
-        neutral: "Neutral"
-        negative: "Negative"
-        positive_percentage: "Positive %"
-        no_data: "No feedback yet"
-        given_total: "Feedback given"
-      history:
-        heading: "Received feedback"
-        empty: "No feedback received yet."
-        reviewer_fallback: "Deleted user"
-      pagination:
-        previous: "Previous"
-        next: "Next"
-    feedback_new:
-      title: "Leave feedback"
-      rating_label: "Rating"
-      comment_label: "Comment (optional)"
-      submit: "Submit feedback"
-      ratings:
-        positive: "Positive"
-        neutral: "Neutral"
-        negative: "Negative"
-      invalid_transaction: "This feedback link is invalid."
-      already_submitted: "You've already submitted feedback for this transaction."
-      ineligible: "Feedback isn't available for this transaction."
-      unavailable: "Feedback submission is temporarily unavailable. Please try again later."
-      success: "Thanks! Your feedback has been submitted."
-      retryable_error: "Something went wrong submitting your feedback. Please try again."
+  js:
+    trade_reputation:
+      trade:
+        nav_label: "Trade"
+        title: "Trade"
+        summary:
+          windows:
+            all_time: "All time"
+            last_30_days: "Last 30 days"
+            last_6_months: "Last 6 months"
+            last_1_year: "Last year"
+          total: "Total"
+          positive: "Positive"
+          neutral: "Neutral"
+          negative: "Negative"
+          positive_percentage: "Positive %"
+          no_data: "No feedback yet"
+          given_total: "Feedback given"
+        history:
+          heading: "Received feedback"
+          empty: "No feedback received yet."
+          reviewer_fallback: "Deleted user"
+        pagination:
+          previous: "Previous"
+          next: "Next"
+      feedback_new:
+        title: "Leave feedback"
+        rating_label: "Rating"
+        comment_label: "Comment (optional)"
+        submit: "Submit feedback"
+        ratings:
+          positive: "Positive"
+          neutral: "Neutral"
+          negative: "Negative"
+        invalid_transaction: "This feedback link is invalid."
+        already_submitted: "You've already submitted feedback for this transaction."
+        ineligible: "Feedback isn't available for this transaction."
+        unavailable: "Feedback submission is temporarily unavailable. Please try again later."
+        success: "Thanks! Your feedback has been submitted."
+        retryable_error: "Something went wrong submitting your feedback. Please try again."
