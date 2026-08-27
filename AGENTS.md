@@ -58,3 +58,7 @@ Stop for unresolved architecture, schema/migration, authorization/security, Mark
 ## Token discipline and skills
 
 Minimum unnecessary tokens, not minimum reasoning. Prefer targeted symbols/ranges/diffs over broad scans or repeated summaries. Reusable procedures live under `.agents/skills/`; read only the matching `SKILL.md`: `task-packet`, `project-plan`, `project-implement`, `project-review`, `project-final-verify`, `project-ci-repair`, `project-schema-review`, `project-security-review`, `project-update-state`.
+
+## Adaptive model / effort routing
+
+Classify execution risk with `docs/ai/EFFORT_ROUTER.md` before broad reads. Start at the lowest sufficient tier: T0 mechanical, T1 routine, T2 high-risk, T3 exceptional. Escalate for risk/ambiguity rather than task size, and de-escalate when the risky phase ends. Use platform-native workers under `.claude/agents/` or `.codex/agents/` when supported; never trade away correctness, security, or validation to save tokens.
