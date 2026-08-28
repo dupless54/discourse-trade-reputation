@@ -52,6 +52,7 @@ tr_TR:
       feedback_new:
         title: "Değerlendirme yap"
         cta: "Değerlendir"
+        already_reviewed_cta: "Değerlendirildi"
         rating_label: "Değerlendirme"
         comment_label: "Yorum (isteğe bağlı)"
         submit: "Değerlendirmeyi gönder"

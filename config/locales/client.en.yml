@@ -52,6 +52,7 @@ en:
       feedback_new:
         title: "Leave feedback"
         cta: "Leave feedback"
+        already_reviewed_cta: "Reviewed"
         rating_label: "Rating"
         comment_label: "Comment (optional)"
         submit: "Submit feedback"
