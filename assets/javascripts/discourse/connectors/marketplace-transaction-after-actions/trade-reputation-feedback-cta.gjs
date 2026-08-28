@@ -21,6 +21,11 @@ export default class TradeReputationMarketplaceFeedbackCta extends Component {
     return this.args.outletArgs?.transaction?.id;
   }
 
+  // static shouldRender only gates whether the connector is instantiated
+  // when mounted through the real PluginOutlet -- it isn't consulted by
+  // every possible render path, so this checks status again before firing
+  // any request rather than relying solely on the outlet-level gate.
+  //
   // The eligibility endpoint is the same authoritative, server-side truth
   // used to gate feedback submission itself (see
   // TradeReputation::FeedbacksController#eligibility) -- it already checks
@@ -28,7 +33,10 @@ export default class TradeReputationMarketplaceFeedbackCta extends Component {
   // whether a TradeReputation::Feedback already exists for this reviewer,
   // so this CTA never has to duplicate that logic client-side.
   async loadEligibility() {
-    if (!this.transactionId) {
+    if (
+      !this.transactionId ||
+      this.args.outletArgs?.transaction?.status !== "completed"
+    ) {
       return;
     }
 
