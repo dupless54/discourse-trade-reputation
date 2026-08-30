@@ -43,6 +43,17 @@ describe "Trade Reputation feedback detail", type: :request do
 
     expect(response.status).to eq(200)
     body = response.parsed_body.fetch("feedback")
+    expect(body.keys).to contain_exactly(
+      "public_id",
+      "transaction_reference",
+      "listing_reference",
+      "rating",
+      "comment",
+      "created_at",
+      "completed_at",
+      "buyer",
+      "seller",
+    )
     expect(body["public_id"]).to eq(feedback.public_id)
     expect(body["transaction_reference"]).to eq("TR-77")
     expect(body["listing_reference"]).to eq("LISTING-1234")
@@ -65,10 +76,36 @@ describe "Trade Reputation feedback detail", type: :request do
     expect(response.parsed_body.fetch("feedback")).not_to have_key("id")
   end
 
+  it "does not expose a transaction participant whose profile is hidden from the viewer" do
+    buyer.user_option.update!(hide_profile: true)
+    allow(Marketplace::TradeContract).to receive(:completed_transaction_info)
+      .with(feedback.marketplace_transaction_id)
+      .and_return(transaction_info)
+
+    get detail_path
+
+    body = response.parsed_body.fetch("feedback")
+    expect(body["buyer"]).to be_nil
+    expect(body["seller"]["username"]).to eq(seller.username)
+    expect(response.body).not_to include(buyer.username)
+  end
+
   it "returns 404 when the reviewed user's profile is hidden" do
     seller.user_option.update!(hide_profile: true)
     allow(Marketplace::TradeContract).to receive(:completed_transaction_info)
       .and_return(transaction_info)
+
+    get detail_path
+
+    expect(response.status).to eq(404)
+  end
+
+  it "returns 404 when the stored participants no longer match the verified transaction" do
+    different_buyer = Fabricate(:user)
+    mismatched_info = transaction_info.with(buyer_id: different_buyer.id)
+    allow(Marketplace::TradeContract).to receive(:completed_transaction_info)
+      .with(feedback.marketplace_transaction_id)
+      .and_return(mismatched_info)
 
     get detail_path
 
