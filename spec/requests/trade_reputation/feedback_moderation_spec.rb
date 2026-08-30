@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 describe "Trade Reputation feedback moderation", type: :request do
-  fab!(:buyer) { Fabricate(:user) }
-  fab!(:seller) { Fabricate(:user) }
-  fab!(:admin) { Fabricate(:admin) }
+  fab!(:buyer, :user)
+  fab!(:seller, :user)
+  fab!(:admin)
 
   before do
     SiteSetting.trade_reputation_enabled = true
@@ -66,7 +66,7 @@ describe "Trade Reputation feedback moderation", type: :request do
     expect(response.status).to eq(200)
     feedback.reload
     expect(feedback.moderation_reason).to eq("first reason")
-    expect(feedback.moderated_at).to eq(original_moderated_at)
+    expect(feedback.moderated_at).to eq_time(original_moderated_at)
     expect(feedback.moderated_by_id).to eq(original_moderated_by_id)
   end
 

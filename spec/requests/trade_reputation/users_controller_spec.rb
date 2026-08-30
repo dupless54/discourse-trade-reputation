@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 describe TradeReputation::UsersController do
-  fab!(:target_user) { Fabricate(:user) }
-  fab!(:reviewer) { Fabricate(:user) }
+  fab!(:target_user, :user)
+  fab!(:reviewer, :user)
 
   before do
     SiteSetting.trade_reputation_enabled = true
@@ -103,6 +103,22 @@ describe TradeReputation::UsersController do
       expect(entry["public_id"]).to match(/\A[0-9a-f-]{36}\z/)
       expect(entry["transaction_reference"]).to eq("TR-3")
       expect(entry["reviewer"]).not_to have_key("id")
+    end
+
+    it "does not expose a reviewer whose profile is hidden from the viewer" do
+      reviewer.user_option.update!(hide_profile: true)
+      TradeReputation::Feedback.create!(
+        marketplace_transaction_id: 4,
+        reviewer_id: reviewer.id,
+        reviewee_id: target_user.id,
+        rating: :positive,
+      )
+
+      get trade_path(target_user.username)
+
+      entry = response.parsed_body["feedbacks"].first
+      expect(entry["reviewer"]).to be_nil
+      expect(response.body).not_to include(reviewer.username)
     end
   end
 

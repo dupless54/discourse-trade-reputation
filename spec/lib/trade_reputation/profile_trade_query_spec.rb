@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 describe TradeReputation::ProfileTradeQuery do
-  fab!(:target_user) { Fabricate(:user) }
-  fab!(:other_user) { Fabricate(:user) }
-  fab!(:reviewer) { Fabricate(:user) }
+  fab!(:target_user, :user)
+  fab!(:other_user, :user)
+  fab!(:reviewer, :user)
+  fab!(:viewer, :admin)
 
   def create_feedback(reviewee:, reviewer:, rating: :positive, comment: nil, created_at: Time.current)
     @transaction_id ||= 0
@@ -22,7 +23,7 @@ describe TradeReputation::ProfileTradeQuery do
   end
 
   def query(user:, params: {})
-    described_class.new(user: user, params: params).results
+    described_class.new(user: user, params: params, guardian: Guardian.new(viewer)).results
   end
 
   describe "summary" do

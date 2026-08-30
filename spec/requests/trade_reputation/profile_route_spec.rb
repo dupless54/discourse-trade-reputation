@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 describe "Trade Reputation profile route" do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   before { SiteSetting.hide_new_user_profiles = false }
 

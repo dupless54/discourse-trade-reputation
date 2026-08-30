@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 describe TradeReputation::Feedback do
-  fab!(:reviewer) { Fabricate(:user) }
-  fab!(:reviewee) { Fabricate(:user) }
+  fab!(:reviewer, :user)
+  fab!(:reviewee, :user)
 
   def build_feedback(**overrides)
     TradeReputation::Feedback.new(

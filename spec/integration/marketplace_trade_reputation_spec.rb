@@ -6,9 +6,9 @@
 # never stub/mock Marketplace::TradeContract — see docs/MARKETPLACE_CONTRACT.md
 # for the boundary this guards against drifting.
 describe "Marketplace <-> Trade Reputation integration", type: :request do
-  fab!(:buyer) { Fabricate(:user) }
-  fab!(:seller) { Fabricate(:user) }
-  fab!(:other_user) { Fabricate(:user) }
+  fab!(:buyer, :user)
+  fab!(:seller, :user)
+  fab!(:other_user, :user)
 
   fab!(:category) do
     Marketplace::Category.create!(

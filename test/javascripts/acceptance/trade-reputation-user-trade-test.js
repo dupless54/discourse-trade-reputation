@@ -135,14 +135,14 @@ acceptance("Trade Reputation | User trade profile", function (needs) {
       .doesNotExist("the comment is not cooked as HTML");
   });
 
-  test("a deleted reviewer falls back to a placeholder label", async function (assert) {
+  test("an unavailable reviewer falls back to a privacy-safe placeholder label", async function (assert) {
     await visit("/u/eviltrout/trade");
 
     assert
       .dom(
         ".trade-reputation-history__item:nth-child(3) .trade-reputation-history__reviewer--fallback"
       )
-      .containsText("Deleted user");
+      .containsText("Unavailable user");
   });
 
   test("the detail link uses the feedback's public_id", async function (assert) {
@@ -167,6 +167,9 @@ acceptance("Trade Reputation | User trade profile", function (needs) {
     assert
       .dom(".trade-reputation-history__pagination-next")
       .exists("a next link is shown");
+    assert
+      .dom(".trade-reputation-history__page-status")
+      .hasText("Page 1 of 2", "the current page is announced");
 
     await click(".trade-reputation-history__pagination-next");
 
@@ -193,6 +196,9 @@ acceptance("Trade Reputation | User trade profile", function (needs) {
     assert
       .dom(".trade-reputation-history__pagination-next")
       .doesNotExist("no next link on the last page");
+    assert
+      .dom(".trade-reputation-history__page-status")
+      .hasText("Page 2 of 2", "the page status updates after navigation");
   });
 });
 

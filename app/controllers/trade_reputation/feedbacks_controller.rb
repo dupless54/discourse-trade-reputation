@@ -10,7 +10,7 @@ module TradeReputation
         guardian: guardian,
         params: params.permit(:marketplace_transaction_id, :rating, :comment),
       ) do
-        on_success { render json: { success: true }, status: 201 }
+        on_success { render json: { success: true }, status: :created }
         on_failed_step(:verify_marketplace_contract_available) do
           render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503)
         end
@@ -24,17 +24,28 @@ module TradeReputation
     end
 
     def show
-      feedback = TradeReputation::Feedback.active.includes(:reviewer, :reviewee).find_by!(public_id: params[:public_id])
+      feedback =
+        TradeReputation::Feedback.active.includes(:reviewee).find_by!(public_id: params[:public_id])
       raise Discourse::NotFound if feedback.reviewee.blank? || !guardian.can_see_profile?(feedback.reviewee)
 
-      return render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503) unless marketplace_contract_available?
+      unless marketplace_contract_available?
+        return render_json_error(
+          I18n.t("trade_reputation.errors.temporarily_unavailable"),
+          status: 503,
+        )
+      end
 
       info = ::Marketplace::TradeContract.completed_transaction_info(feedback.marketplace_transaction_id)
-      raise Discourse::NotFound if info.blank? || info.transaction_id != feedback.marketplace_transaction_id
+      raise Discourse::NotFound unless feedback_matches_transaction?(feedback, info)
 
       unless marketplace_detail_contract_available?(info)
-        return render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503)
+        return render_json_error(
+          I18n.t("trade_reputation.errors.temporarily_unavailable"),
+          status: 503,
+        )
       end
+
+      participants = User.where(id: [info.buyer_id, info.seller_id]).index_by(&:id)
 
       render json: {
         feedback: {
@@ -45,17 +56,18 @@ module TradeReputation
           comment: feedback.comment,
           created_at: feedback.created_at,
           completed_at: info.completed_at,
-          reviewer: serialize_user(feedback.reviewer),
-          reviewee: serialize_user(feedback.reviewee),
-          buyer: serialize_user(User.find_by(id: info.buyer_id)),
-          seller: serialize_user(User.find_by(id: info.seller_id)),
+          buyer: serialize_user(participants[info.buyer_id]),
+          seller: serialize_user(participants[info.seller_id]),
         },
       }
     end
 
     def eligibility
       unless marketplace_contract_available?
-        return render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503)
+        return render_json_error(
+          I18n.t("trade_reputation.errors.temporarily_unavailable"),
+          status: 503,
+        )
       end
 
       transaction_id = params[:marketplace_transaction_id].to_i
@@ -63,12 +75,15 @@ module TradeReputation
       return render json: { eligible: false } if info.blank?
 
       user_id = current_user.id
-      return render json: { eligible: false } unless user_id == info.buyer_id || user_id == info.seller_id
+      unless user_id == info.buyer_id || user_id == info.seller_id
+        return render json: { eligible: false }
+      end
 
-      already_reviewed = TradeReputation::Feedback.exists?(
-        marketplace_transaction_id: info.transaction_id,
-        reviewer_id: user_id,
-      )
+      already_reviewed =
+        TradeReputation::Feedback.exists?(
+          marketplace_transaction_id: info.transaction_id,
+          reviewer_id: user_id,
+        )
       return render json: { eligible: false, already_reviewed: true } if already_reviewed
 
       render json: { eligible: true }
@@ -103,8 +118,15 @@ module TradeReputation
       end
     end
 
+    def feedback_matches_transaction?(feedback, info)
+      return false if info.blank? || info.transaction_id != feedback.marketplace_transaction_id
+
+      [feedback.reviewer_id, feedback.reviewee_id].sort == [info.buyer_id, info.seller_id].sort
+    end
+
     def serialize_user(user)
-      return nil if user.blank?
+      return nil if user.blank? || !guardian.can_see_profile?(user)
+
       { username: user.username, avatar_template: user.avatar_template }
     end
 
