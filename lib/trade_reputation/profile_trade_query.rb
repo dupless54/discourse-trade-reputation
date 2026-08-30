@@ -5,9 +5,10 @@ module TradeReputation
     DEFAULT_PER_PAGE = 30
     MAX_PER_PAGE = 100
 
-    def initialize(user:, params:)
+    def initialize(user:, params:, guardian: Guardian.new)
       @user = user
       @params = params
+      @guardian = guardian
     end
 
     def results
@@ -16,7 +17,7 @@ module TradeReputation
 
     private
 
-    attr_reader :user, :params
+    attr_reader :user, :params, :guardian
 
     def summary
       {
@@ -36,12 +37,18 @@ module TradeReputation
       neutral = counts["neutral"].to_i
       negative = counts["negative"].to_i
       total = positive + neutral + negative
-      { total: total, positive: positive, neutral: neutral, negative: negative,
-        positive_percentage: percentage(positive, total) }
+      {
+        total: total,
+        positive: positive,
+        neutral: neutral,
+        negative: negative,
+        positive_percentage: percentage(positive, total),
+      }
     end
 
     def percentage(positive, total)
       return nil if total.zero?
+
       (positive.to_f / total * 100).round(2)
     end
 
@@ -50,9 +57,12 @@ module TradeReputation
     end
 
     def feedbacks
-      received_scope.includes(:reviewer).order(created_at: :desc, id: :desc)
-                    .limit(per_page).offset((page - 1) * per_page)
-                    .map { |feedback| serialize_feedback(feedback) }
+      received_scope
+        .includes(:reviewer)
+        .order(created_at: :desc, id: :desc)
+        .limit(per_page)
+        .offset((page - 1) * per_page)
+        .map { |feedback| serialize_feedback(feedback) }
     end
 
     def serialize_feedback(feedback)
@@ -67,7 +77,8 @@ module TradeReputation
     end
 
     def serialize_user(target)
-      return nil if target.blank?
+      return nil if target.blank? || !guardian.can_see_profile?(target)
+
       { username: target.username, avatar_template: target.avatar_template }
     end
 
@@ -81,6 +92,7 @@ module TradeReputation
 
     def total_pages
       return 0 if total.zero?
+
       (total.to_f / per_page).ceil
     end
 
@@ -99,17 +111,20 @@ module TradeReputation
     def fetch_page
       raw = params[:page]
       return 1 if raw.blank?
+
       positive_integer(raw, :page)
     end
 
     def fetch_per_page
       raw = params[:per_page]
       return DEFAULT_PER_PAGE if raw.blank?
+
       [positive_integer(raw, :per_page), MAX_PER_PAGE].min
     end
 
     def positive_integer(raw, key)
       raise Discourse::InvalidParameters.new(key) unless raw.to_s.match?(/\A[1-9]\d*\z/)
+
       raw.to_s.to_i
     end
   end
