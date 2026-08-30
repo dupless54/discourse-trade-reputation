@@ -10,6 +10,9 @@ en:
         nav_label: "Trade"
         title: "Trade"
         summary:
+          overview_heading: "Reputation overview"
+          hero_label: "Positive reputation"
+          periods_heading: "By time range"
           windows:
             all_time: "All time"
             last_30_days: "Last 30 days"
@@ -29,6 +32,7 @@ en:
           transaction: "Transaction"
           details: "View details"
         pagination:
+          nav_label: "Feedback pagination"
           previous: "Previous"
           next: "Next"
       feedback_detail:

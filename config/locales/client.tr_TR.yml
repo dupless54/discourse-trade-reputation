@@ -10,6 +10,9 @@ tr_TR:
         nav_label: "Ticaret"
         title: "Ticaret"
         summary:
+          overview_heading: "İtibar özeti"
+          hero_label: "Pozitif itibar"
+          periods_heading: "Zaman aralığına göre"
           windows:
             all_time: "Tüm zamanlar"
             last_30_days: "Son 30 gün"
@@ -29,6 +32,7 @@ tr_TR:
           transaction: "İşlem"
           details: "Ayrıntıları görüntüle"
         pagination:
+          nav_label: "Değerlendirme sayfalama"
           previous: "Önceki"
           next: "Sonraki"
       feedback_detail:
