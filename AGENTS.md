@@ -53,7 +53,20 @@ Test the smallest relevant behavior. Never claim tests passed unless they actual
 
 ## Safety and delivery
 
-Stop for unresolved architecture, schema/migration, authorization/security, Marketplace-contract, or product ambiguity. Preserve unrelated work. Never stage/commit `.claude/settings.local.json`. Never force-push, reset/clean, delete branches, deploy, or make destructive DB changes. Commit/push/PR/merge only when the current user task explicitly authorizes it.
+Stop for unresolved architecture, schema/migration, authorization/security, Marketplace-contract, or product ambiguity. Preserve unrelated work. Never stage/commit `.claude/settings.local.json`. Never force-push, reset/clean, delete branches, deploy, or make destructive DB changes.
+
+## CI-only merge gate
+Claude/Gemini/Codex reviewer or verifier approval is not required and must never block merge. Do not request or wait for AI approvals as a merge condition.
+
+For a normal scoped PR, the merge gate is CI only:
+- validate exact changed paths still match the task;
+- use only the latest exact PR head SHA;
+- require the official `Discourse Plugin` CI workflow on that exact head to conclude GREEN;
+- if additional required Discourse-owned checks exist, they must also be GREEN;
+- a new commit invalidates all older CI evidence;
+- `NO_CI`, missing, skipped, pending, cancelled, neutral, stale-head, or failed checks are not GREEN.
+
+When the latest exact head is GREEN and no unresolved security/schema/product/architecture blocker remains, the agent is pre-authorized to merge without another user confirmation. Prefer squash merge with `expected_head_sha` when supported. Never weaken tests or broaden scope just to obtain GREEN.
 
 ## Token discipline and skills
 
