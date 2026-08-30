@@ -47,7 +47,7 @@ module TradeReputation
     def verify_participant(guardian:, transaction_info:)
       user = guardian.user
       return fail_step!(feedback_ineligible: true) if user.blank?
-      return fail_step!(feedback_ineligible: true) unless user.id == transaction_info.buyer_id ||
+      fail_step!(feedback_ineligible: true) unless user.id == transaction_info.buyer_id ||
         user.id == transaction_info.seller_id
     end
 
