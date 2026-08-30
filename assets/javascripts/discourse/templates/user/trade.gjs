@@ -74,28 +74,16 @@ class UserTrade extends Component {
     };
   }
 
-  get positiveShare() {
-    return this.distributionShares.positive;
-  }
-
-  get neutralShare() {
-    return this.distributionShares.neutral;
-  }
-
-  get negativeShare() {
-    return this.distributionShares.negative;
-  }
-
   get positiveBarStyle() {
-    return trustHTML(`width: ${this.positiveShare}%`);
+    return trustHTML(`width: ${this.distributionShares.positive}%`);
   }
 
   get neutralBarStyle() {
-    return trustHTML(`width: ${this.neutralShare}%`);
+    return trustHTML(`width: ${this.distributionShares.neutral}%`);
   }
 
   get negativeBarStyle() {
-    return trustHTML(`width: ${this.negativeShare}%`);
+    return trustHTML(`width: ${this.distributionShares.negative}%`);
   }
 
   get feedbacks() {
@@ -136,12 +124,24 @@ class UserTrade extends Component {
         class="trade-reputation-hero"
         aria-labelledby="trade-reputation-hero-heading"
       >
-        <h2
-          id="trade-reputation-hero-heading"
-          class="trade-reputation-hero__heading"
-        >
-          {{i18n "trade_reputation.trade.summary.overview_heading"}}
-        </h2>
+        <div class="trade-reputation-hero__header">
+          <div class="trade-reputation-hero__heading-group">
+            <h2
+              id="trade-reputation-hero-heading"
+              class="trade-reputation-hero__heading"
+            >
+              {{i18n "trade_reputation.trade.summary.overview_heading"}}
+            </h2>
+            <p class="trade-reputation-hero__description">
+              {{i18n "trade_reputation.trade.summary.description"}}
+            </p>
+          </div>
+
+          <span class="trade-reputation-hero__verified">
+            {{dIcon "circle-check"}}
+            {{i18n "trade_reputation.trade.summary.verified_transactions"}}
+          </span>
+        </div>
 
         <div class="trade-reputation-hero__primary">
           <p class="trade-reputation-hero__percentage">
@@ -177,6 +177,24 @@ class UserTrade extends Component {
               class="trade-reputation-hero__bar-segment -negative"
               style={{this.negativeBarStyle}}
             ></span>
+          </span>
+        </div>
+
+        <div class="trade-reputation-hero__legend">
+          <span class="trade-reputation-hero__legend-item -positive">
+            <span class="trade-reputation-hero__legend-dot"></span>
+            {{i18n "trade_reputation.trade.summary.positive"}}
+            <strong>{{this.allTime.positive}}</strong>
+          </span>
+          <span class="trade-reputation-hero__legend-item -neutral">
+            <span class="trade-reputation-hero__legend-dot"></span>
+            {{i18n "trade_reputation.trade.summary.neutral"}}
+            <strong>{{this.allTime.neutral}}</strong>
+          </span>
+          <span class="trade-reputation-hero__legend-item -negative">
+            <span class="trade-reputation-hero__legend-dot"></span>
+            {{i18n "trade_reputation.trade.summary.negative"}}
+            <strong>{{this.allTime.negative}}</strong>
           </span>
         </div>
 
@@ -217,12 +235,14 @@ class UserTrade extends Component {
         class="trade-reputation-periods"
         aria-labelledby="trade-reputation-periods-heading"
       >
-        <h2
-          id="trade-reputation-periods-heading"
-          class="trade-reputation-periods__heading"
-        >
-          {{i18n "trade_reputation.trade.summary.periods_heading"}}
-        </h2>
+        <div class="trade-reputation-section-heading">
+          <div>
+            <h2 id="trade-reputation-periods-heading">
+              {{i18n "trade_reputation.trade.summary.periods_heading"}}
+            </h2>
+            <p>{{i18n "trade_reputation.trade.summary.periods_description"}}</p>
+          </div>
+        </div>
 
         <div class="trade-reputation-periods__grid">
           {{#each this.comparisonWindows as |bucket|}}
@@ -237,6 +257,10 @@ class UserTrade extends Component {
                 {{else}}
                   {{i18n "trade_reputation.trade.summary.no_data"}}
                 {{/if}}
+              </p>
+
+              <p class="trade-reputation-periods__percentage-label">
+                {{i18n "trade_reputation.trade.summary.hero_label"}}
               </p>
 
               <dl class="trade-reputation-periods__breakdown">
@@ -267,14 +291,21 @@ class UserTrade extends Component {
         aria-labelledby="trade-reputation-history-heading"
       >
         <div class="trade-reputation-history__header">
-          <h2 id="trade-reputation-history-heading">
-            {{i18n "trade_reputation.trade.history.heading"}}
-          </h2>
-          {{#if this.hasFeedbackTotal}}
-            <span class="trade-reputation-history__count" aria-hidden="true">
-              {{this.meta.total}}
-            </span>
-          {{/if}}
+          <div>
+            <div class="trade-reputation-history__heading-line">
+              <h2 id="trade-reputation-history-heading">
+                {{i18n "trade_reputation.trade.history.heading"}}
+              </h2>
+              {{#if this.hasFeedbackTotal}}
+                <span class="trade-reputation-history__count">
+                  {{this.meta.total}}
+                </span>
+              {{/if}}
+            </div>
+            <p class="trade-reputation-history__description">
+              {{i18n "trade_reputation.trade.history.description"}}
+            </p>
+          </div>
         </div>
 
         {{#if this.feedbacks.length}}
@@ -291,6 +322,7 @@ class UserTrade extends Component {
                     <span
                       class="trade-reputation-history__reviewer trade-reputation-history__reviewer--fallback"
                     >
+                      {{dIcon "user"}}
                       {{i18n "trade_reputation.trade.history.reviewer_fallback"}}
                     </span>
                   {{/if}}
@@ -322,7 +354,7 @@ class UserTrade extends Component {
                   <div class="trade-reputation-history__footer">
                     <span class="trade-reputation-history__transaction">
                       {{i18n "trade_reputation.trade.history.transaction"}}:
-                      {{feedback.transaction_reference}}
+                      <strong>{{feedback.transaction_reference}}</strong>
                     </span>
 
                     <LinkTo
@@ -344,33 +376,54 @@ class UserTrade extends Component {
               class="trade-reputation-history__pagination"
               aria-label={{i18n "trade_reputation.trade.pagination.nav_label"}}
             >
-              {{#if this.hasPrevious}}
-                <LinkTo
-                  @route="user.trade"
-                  @query={{hash page=this.previousPage}}
-                  class="btn btn-default trade-reputation-history__pagination-previous"
-                >
-                  {{dIcon "chevron-left"}}
-                  {{i18n "trade_reputation.trade.pagination.previous"}}
-                </LinkTo>
-              {{/if}}
+              <div class="trade-reputation-history__pagination-slot -previous">
+                {{#if this.hasPrevious}}
+                  <LinkTo
+                    @route="user.trade"
+                    @query={{hash page=this.previousPage}}
+                    class="btn btn-default trade-reputation-history__pagination-previous"
+                  >
+                    {{dIcon "chevron-left"}}
+                    {{i18n "trade_reputation.trade.pagination.previous"}}
+                  </LinkTo>
+                {{/if}}
+              </div>
 
-              {{#if this.hasNext}}
-                <LinkTo
-                  @route="user.trade"
-                  @query={{hash page=this.nextPage}}
-                  class="btn btn-default trade-reputation-history__pagination-next"
-                >
-                  {{i18n "trade_reputation.trade.pagination.next"}}
-                  {{dIcon "chevron-right"}}
-                </LinkTo>
-              {{/if}}
+              <span class="trade-reputation-history__page-status">
+                {{i18n
+                  "trade_reputation.trade.pagination.page_status"
+                  page=this.meta.page
+                  total=this.meta.total_pages
+                }}
+              </span>
+
+              <div class="trade-reputation-history__pagination-slot -next">
+                {{#if this.hasNext}}
+                  <LinkTo
+                    @route="user.trade"
+                    @query={{hash page=this.nextPage}}
+                    class="btn btn-default trade-reputation-history__pagination-next"
+                  >
+                    {{i18n "trade_reputation.trade.pagination.next"}}
+                    {{dIcon "chevron-right"}}
+                  </LinkTo>
+                {{/if}}
+              </div>
             </nav>
           {{/if}}
         {{else}}
           <div class="trade-reputation-history__empty">
-            {{dIcon "inbox"}}
-            <p>{{i18n "trade_reputation.trade.history.empty"}}</p>
+            <span class="trade-reputation-history__empty-icon">
+              {{dIcon "inbox"}}
+            </span>
+            <div>
+              <p class="trade-reputation-history__empty-title">
+                {{i18n "trade_reputation.trade.history.empty"}}
+              </p>
+              <p class="trade-reputation-history__empty-description">
+                {{i18n "trade_reputation.trade.history.empty_description"}}
+              </p>
+            </div>
           </div>
         {{/if}}
       </section>
