@@ -8,7 +8,12 @@ module TradeReputation
       user = fetch_user_from_params
       raise Discourse::NotFound unless guardian.can_see_profile?(user)
 
-      result = TradeReputation::ProfileTradeQuery.new(user: user, params: params).results
+      result =
+        TradeReputation::ProfileTradeQuery.new(
+          user: user,
+          params: params,
+          guardian: guardian,
+        ).results
 
       render json: result
     end
