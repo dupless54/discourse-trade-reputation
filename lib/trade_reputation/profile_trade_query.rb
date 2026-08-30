@@ -5,7 +5,7 @@ module TradeReputation
     DEFAULT_PER_PAGE = 30
     MAX_PER_PAGE = 100
 
-    def initialize(user:, params:, guardian: Guardian.new)
+    def initialize(user:, params:, guardian:)
       @user = user
       @params = params
       @guardian = guardian
