@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 describe TradeReputation::FeedbacksController do
-  fab!(:buyer) { Fabricate(:user) }
-  fab!(:seller) { Fabricate(:user) }
-  fab!(:other_user) { Fabricate(:user) }
+  fab!(:buyer, :user)
+  fab!(:seller, :user)
+  fab!(:other_user, :user)
 
   before do
     SiteSetting.trade_reputation_enabled = true

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 describe "Trade Reputation feedback detail", type: :request do
-  fab!(:buyer) { Fabricate(:user) }
-  fab!(:seller) { Fabricate(:user) }
+  fab!(:buyer, :user)
+  fab!(:seller, :user)
 
   before do
     SiteSetting.trade_reputation_enabled = true

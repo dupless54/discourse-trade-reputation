@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 describe TradeReputation::UsersController do
-  fab!(:target_user) { Fabricate(:user) }
-  fab!(:reviewer) { Fabricate(:user) }
+  fab!(:target_user, :user)
+  fab!(:reviewer, :user)
 
   before do
     SiteSetting.trade_reputation_enabled = true

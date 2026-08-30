@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 describe TradeReputation::Feedbacks::Create do
-  fab!(:buyer) { Fabricate(:user) }
-  fab!(:seller) { Fabricate(:user) }
-  fab!(:other_user) { Fabricate(:user) }
+  fab!(:buyer, :user)
+  fab!(:seller, :user)
+  fab!(:other_user, :user)
 
   let(:marketplace_transaction_id) { 1 }
 
