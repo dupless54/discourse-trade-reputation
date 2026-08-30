@@ -3,6 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { hash } from "@ember/helper";
 import { LinkTo } from "@ember/routing";
 import { ajax } from "discourse/lib/ajax";
+import dIcon from "discourse/ui-kit/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 
 export default class TradeReputationMarketplaceFeedbackCta extends Component {
@@ -62,7 +63,9 @@ export default class TradeReputationMarketplaceFeedbackCta extends Component {
       <span
         class="btn btn-default disabled trade-reputation-feedback-cta trade-reputation-feedback-cta--reviewed"
         title={{i18n "trade_reputation.feedback_new.already_reviewed_cta"}}
+        role="status"
       >
+        {{dIcon "circle-check"}}
         {{i18n "trade_reputation.feedback_new.already_reviewed_cta"}}
       </span>
     {{else if this.isEligible}}
@@ -71,6 +74,7 @@ export default class TradeReputationMarketplaceFeedbackCta extends Component {
         @query={{hash transaction_id=@outletArgs.transaction.id}}
         class="btn btn-primary trade-reputation-feedback-cta"
       >
+        {{dIcon "circle-check"}}
         {{i18n "trade_reputation.feedback_new.cta"}}
       </LinkTo>
     {{/if}}
