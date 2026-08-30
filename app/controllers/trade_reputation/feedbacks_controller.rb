@@ -10,7 +10,7 @@ module TradeReputation
         guardian: guardian,
         params: params.permit(:marketplace_transaction_id, :rating, :comment),
       ) do
-        on_success { render json: { success: true }, status: 201 }
+        on_success { render json: { success: true }, status: :created }
         on_failed_step(:verify_marketplace_contract_available) do
           render_json_error(I18n.t("trade_reputation.errors.temporarily_unavailable"), status: 503)
         end
