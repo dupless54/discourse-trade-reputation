@@ -8,6 +8,7 @@
 enabled_site_setting :trade_reputation_enabled
 
 register_asset "stylesheets/common/trade-reputation.scss"
+register_asset "stylesheets/mobile/trade-reputation.scss", :mobile
 
 Discourse::Application.routes.append do
   get "u/:username/trade" => "users#show", constraints: { username: RouteFormat.username }

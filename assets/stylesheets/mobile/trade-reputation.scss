@@ -1,0 +1,742 @@
+.trade-reputation-user-trade,
+.trade-reputation-feedback-detail,
+.trade-reputation-feedback-new {
+  --trade-reputation-mobile-gap: 0.875rem;
+  --trade-reputation-mobile-radius: 1rem;
+  --trade-reputation-mobile-touch: 2.75rem;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-inline: 0;
+  padding: 0 0 max(1.25rem, var(--safe-area-inset-bottom));
+  overflow-x: clip;
+
+  .btn,
+  a.btn {
+    min-height: var(--trade-reputation-mobile-touch);
+    touch-action: manipulation;
+  }
+
+  a,
+  button,
+  textarea,
+  input,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  textarea:focus-visible,
+  input:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--tertiary);
+    outline-offset: 2px;
+  }
+}
+
+.trade-reputation-section-heading,
+.trade-reputation-history__header {
+  display: block;
+  margin-bottom: 0.85rem;
+
+  h2 {
+    font-size: var(--font-up-1);
+    line-height: 1.25;
+  }
+
+  p {
+    margin-top: 0.3rem;
+    font-size: var(--font-down-1);
+    line-height: 1.45;
+  }
+}
+
+// Profile reputation dashboard
+.trade-reputation-hero {
+  position: relative;
+  padding: 1rem;
+  margin-bottom: 1.35rem;
+  border-radius: var(--trade-reputation-mobile-radius);
+  box-shadow: 0 1px 2px var(--primary-low);
+  overflow: hidden;
+
+  &::after {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 0.2rem;
+    background: linear-gradient(
+      90deg,
+      var(--success),
+      var(--primary-low-mid),
+      var(--danger)
+    );
+    content: "";
+  }
+
+  &__header {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  &__heading {
+    font-size: var(--font-up-1);
+  }
+
+  &__description {
+    margin-top: 0.35rem;
+    font-size: var(--font-down-1);
+    line-height: 1.45;
+  }
+
+  &__verified {
+    width: 100%;
+    min-height: var(--trade-reputation-mobile-touch);
+    justify-content: center;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.75rem;
+    white-space: normal;
+    text-align: center;
+  }
+
+  &__primary {
+    margin-bottom: 0.85rem;
+  }
+
+  &__percentage {
+    font-size: var(--font-up-4);
+    letter-spacing: -0.025em;
+  }
+
+  &__percentage-sign {
+    font-size: var(--font-up-2);
+  }
+
+  &__percentage-empty {
+    font-size: var(--font-up-1);
+  }
+
+  &__caption {
+    margin-top: 0.35rem;
+    font-size: var(--font-down-1);
+  }
+
+  &__bar {
+    height: 0.75rem;
+  }
+
+  &__legend {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  &__legend-item {
+    min-width: 0;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.5rem 0.4rem;
+    border: 1px solid var(--trade-reputation-border);
+    border-radius: 0.7rem;
+    background: var(--trade-reputation-surface);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  &__legend-dot {
+    flex: 0 0 auto;
+  }
+
+  &__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding-top: 0.85rem;
+  }
+
+  &__stat {
+    display: flex;
+    min-height: 4.25rem;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.7rem;
+    border: 1px solid var(--trade-reputation-border);
+    border-radius: 0.75rem;
+
+    dt {
+      margin-bottom: 0.4rem;
+      font-size: var(--font-down-1);
+    }
+
+    dd {
+      font-size: var(--font-up-1);
+    }
+
+    &.-given {
+      grid-column: 1 / -1;
+      min-height: 3.75rem;
+    }
+  }
+}
+
+.trade-reputation-periods {
+  margin-bottom: 1.5rem;
+
+  &__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
+  }
+
+  &__card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0 0.85rem;
+    padding: 0.9rem;
+    border-radius: 0.85rem;
+    box-shadow: 0 1px 2px var(--primary-low);
+
+    &::before {
+      width: 0.22rem;
+    }
+  }
+
+  &__card-heading {
+    grid-column: 1;
+    margin-bottom: 0.25rem;
+    font-size: var(--font-down-1);
+  }
+
+  &__percentage {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    margin: 0;
+    font-size: var(--font-up-2);
+    text-align: end;
+  }
+
+  &__percentage-label {
+    grid-column: 1;
+    margin: 0;
+    font-size: var(--font-down-2);
+  }
+
+  &__breakdown {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem;
+    margin-top: 0.75rem;
+    padding-top: 0.7rem;
+
+    div {
+      padding: 0.1rem;
+      text-align: center;
+    }
+
+    dt {
+      font-size: var(--font-down-2);
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    dd {
+      margin-top: 0.2rem;
+      font-size: var(--font-0);
+    }
+  }
+}
+
+.trade-reputation-history {
+  &__heading-line {
+    align-items: center;
+  }
+
+  &__count {
+    min-height: 1.65rem;
+  }
+
+  &__list {
+    gap: 0.65rem;
+  }
+
+  &__item {
+    display: block;
+    padding: 0.9rem;
+    border-radius: 0.9rem;
+    box-shadow: 0 1px 2px var(--primary-low);
+  }
+
+  &__identity {
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0 0 0.75rem;
+    padding: 0 0 0.75rem;
+    border-bottom: 1px solid var(--trade-reputation-border);
+  }
+
+  &__reviewer {
+    font-size: var(--font-0);
+  }
+
+  &__top {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+  }
+
+  &__rating {
+    min-height: 2rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  &__date {
+    max-width: 48%;
+    white-space: normal;
+    text-align: end;
+    line-height: 1.3;
+  }
+
+  &__comment {
+    margin-bottom: 0.75rem;
+    padding: 0.8rem;
+    border: 0;
+    border-radius: 0.7rem;
+    background: var(--trade-reputation-subtle);
+    line-height: 1.5;
+  }
+
+  &__footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+
+  &__transaction {
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.65rem;
+    background: var(--trade-reputation-subtle);
+  }
+
+  &__details {
+    width: 100%;
+    min-height: var(--trade-reputation-mobile-touch);
+    justify-content: center;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--trade-reputation-border);
+    border-radius: 0.7rem;
+    background: var(--trade-reputation-surface);
+    white-space: normal;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  &__pagination {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--trade-reputation-border);
+  }
+
+  &__page-status {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    padding: 0.35rem 0;
+    text-align: center;
+  }
+
+  &__pagination-previous,
+  &__pagination-next {
+    width: 100%;
+    min-height: var(--trade-reputation-mobile-touch);
+  }
+
+  &__empty {
+    min-height: 0;
+    padding: 1.5rem 1rem;
+    border-radius: 0.9rem;
+  }
+
+  &__empty-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+// Feedback detail and moderation
+.trade-reputation-feedback-detail {
+  &__header {
+    display: grid;
+    gap: 0.85rem;
+    padding: 1rem;
+    margin-bottom: 0.7rem;
+    border-radius: var(--trade-reputation-mobile-radius);
+    box-shadow: 0 1px 2px var(--primary-low);
+
+    h1 {
+      font-size: var(--font-up-2);
+    }
+  }
+
+  &__eyebrow {
+    font-size: var(--font-down-2);
+  }
+
+  &__description {
+    margin-top: 0.35rem;
+    font-size: var(--font-down-1);
+    line-height: 1.45;
+  }
+
+  &__rating {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 2.15rem;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    font-size: var(--font-down-1);
+    font-weight: 700;
+  }
+
+  &__card,
+  &__feedback,
+  &__moderation {
+    padding: 0.9rem;
+    border-radius: 0.9rem;
+    box-shadow: 0 1px 2px var(--primary-low);
+  }
+
+  &__feedback,
+  &__moderation {
+    margin-top: 0.7rem;
+  }
+
+  &__section-heading {
+    display: grid;
+    gap: 0.55rem;
+    padding-bottom: 0.7rem;
+    margin-bottom: 0;
+
+    h2 {
+      font-size: var(--font-0);
+    }
+
+    p {
+      margin-top: 0.25rem;
+      font-size: var(--font-down-1);
+    }
+  }
+
+  &__verified {
+    width: fit-content;
+    min-height: 2rem;
+    padding: 0.3rem 0.55rem;
+    border-radius: 999px;
+    background: var(--success-low);
+  }
+
+  &__facts {
+    grid-template-columns: minmax(0, 1fr);
+
+    > div {
+      display: grid;
+      grid-template-columns: minmax(7rem, 0.42fr) minmax(0, 1fr);
+      gap: 0.65rem;
+      align-items: start;
+      padding: 0.75rem 0;
+
+      &:nth-child(odd),
+      &:nth-child(even) {
+        padding-inline: 0;
+        border-inline-start: 0;
+      }
+    }
+
+    dt {
+      margin: 0;
+      font-size: var(--font-down-1);
+    }
+
+    dd {
+      text-align: end;
+    }
+  }
+
+  &__comment {
+    margin-top: 0.8rem;
+    padding: 0.85rem;
+    border: 1px solid var(--trade-reputation-border);
+    border-radius: 0.75rem;
+    line-height: 1.55;
+  }
+
+  &__moderation-heading {
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+
+    > span {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    h2 {
+      font-size: var(--font-0);
+    }
+  }
+
+  &__moderation-reason {
+    min-height: 8.5rem;
+    padding: 0.8rem;
+    border-radius: 0.65rem;
+    font-size: 1rem;
+  }
+
+  &__moderation-actions {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.8rem;
+
+    p {
+      grid-row: 1;
+      font-size: var(--font-down-1);
+    }
+  }
+
+  &__invalidate-button {
+    width: 100%;
+    min-height: 3rem;
+  }
+
+  &__moderation-success {
+    min-height: var(--trade-reputation-mobile-touch);
+    padding: 0.75rem;
+    border-radius: 0.7rem;
+  }
+}
+
+// Feedback creation flow
+.trade-reputation-feedback-new {
+  &__header {
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: var(--trade-reputation-mobile-radius)
+      var(--trade-reputation-mobile-radius) 0 0;
+
+    h1 {
+      font-size: var(--font-up-2);
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__header-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: var(--font-0);
+  }
+
+  &__eyebrow {
+    font-size: var(--font-down-2);
+  }
+
+  &__description {
+    margin-top: 0.35rem;
+    font-size: var(--font-down-1);
+    line-height: 1.45;
+  }
+
+  &__transaction {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0;
+
+    strong {
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__verified {
+    width: fit-content;
+    min-height: 2rem;
+    margin-inline-start: 0;
+    padding: 0.3rem 0.55rem;
+    border-radius: 999px;
+    background: var(--success-low);
+  }
+
+  &__content {
+    padding: 0.85rem;
+    border-radius: 0 0 var(--trade-reputation-mobile-radius)
+      var(--trade-reputation-mobile-radius);
+  }
+
+  &__message {
+    gap: 0.55rem;
+    padding: 0.8rem;
+    border-radius: 0.75rem;
+    font-size: var(--font-down-1);
+  }
+
+  &__form {
+    textarea,
+    input,
+    select {
+      max-width: 100%;
+      font-size: 1rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 8.5rem;
+      padding: 0.8rem;
+    }
+
+    .form-kit__alert {
+      margin-bottom: 0.75rem;
+      border-radius: 0.7rem;
+    }
+  }
+
+  &__form-section {
+    margin-bottom: 0.7rem;
+    padding: 0.85rem;
+    border: 1px solid var(--trade-reputation-border);
+    border-radius: 0.8rem;
+    background: var(--trade-reputation-subtle);
+
+    &:first-of-type {
+      padding-top: 0.85rem;
+    }
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  &__form-heading {
+    margin-bottom: 0.75rem;
+
+    h2 {
+      font-size: var(--font-0);
+    }
+
+    p {
+      font-size: var(--font-down-1);
+      line-height: 1.4;
+    }
+  }
+
+  &__submit-row {
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 0.85rem;
+
+    > p {
+      grid-row: 1;
+      font-size: var(--font-down-1);
+    }
+
+    .btn {
+      width: 100%;
+      min-height: 3rem;
+      font-weight: 700;
+    }
+  }
+}
+
+// Marketplace transaction action
+.trade-reputation-feedback-cta {
+  width: 100%;
+  min-height: var(--trade-reputation-mobile-touch, 2.75rem);
+  justify-content: center;
+  padding-inline: 0.9rem;
+  white-space: normal;
+  text-align: center;
+  touch-action: manipulation;
+
+  &--reviewed {
+    opacity: 0.8;
+  }
+}
+
+@media (max-width: 390px) {
+  .trade-reputation-hero {
+    &__legend {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    &__legend-item {
+      justify-content: flex-start;
+      padding-inline: 0.65rem;
+    }
+
+    &__stats {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    &__stat.-given {
+      grid-column: auto;
+    }
+  }
+
+  .trade-reputation-periods {
+    &__card {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    &__percentage {
+      grid-column: 1;
+      grid-row: auto;
+      margin-top: 0.35rem;
+      text-align: start;
+    }
+
+    &__percentage-label {
+      margin-top: 0.15rem;
+    }
+
+    &__breakdown {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .trade-reputation-history {
+    &__top {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    &__date {
+      max-width: 100%;
+      text-align: start;
+    }
+  }
+
+  .trade-reputation-feedback-detail {
+    &__facts > div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.25rem;
+    }
+
+    &__facts dd {
+      text-align: start;
+    }
+  }
+
+  .trade-reputation-feedback-new {
+    &__header {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    &__header-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+  }
+}
